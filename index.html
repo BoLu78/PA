@@ -96,7 +96,7 @@ h1{margin:2px 0 0;font-size:26px;font-weight:600;letter-spacing:-.01em}
 .lhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
 .txt{font-family:var(--f-read);font-size:var(--rs);line-height:1.6;max-width:62ch}
 .txt p{margin:0 0 .75em}
-.txt b{font-weight:600}
+.txt b{font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:3px;padding:0 .2em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 .25em}
 
 .reader{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;
@@ -111,7 +111,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.2</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.3</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
@@ -244,7 +244,7 @@ const F={
 };
 
 /* ---- helpers per i testi ---- */
-const o=(k,l)=>{const x=(O[k]||[]).find(a=>a.k===S[k]);return x&&x[l]?x[l]:GAP};
+const o=(k,l)=>{const x=(O[k]||[]).find(a=>a.k===S[k]);return x&&x[l]?`<b>${x[l]}</b>`:GAP};
 const v=k=>{const x=String(S[k]??'').trim();return x?`<b>${esc(x)}</b>`:GAP};
 const n=(k,l)=>{const x=String(S[k]??'').trim();if(!x)return GAP;const d=x.replace(/[^\d]/g,'');
   return `<b>${d&&d===x?Number(d).toLocaleString(l==='it'?'it-IT':'en-GB'):esc(x)}</b>`};
