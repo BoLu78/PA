@@ -42,6 +42,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 h1{margin:2px 0 0;font-size:26px;font-weight:600;letter-spacing:-.01em}
 .ghost{background:transparent;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:13px;color:var(--muted)}
+.hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg.theme button{padding:6px 11px;font-size:13px}
 .ghost:hover{color:var(--ink);border-color:var(--muted)}
 
 .wrap{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:22px;align-items:start}
@@ -109,10 +111,11 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.1</span> · 18.10.2026</div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.2</span></div>
     <h1>PA</h1>
   </div>
-  <button class="ghost" id="reset" type="button">Nuovo volo</button>
+  <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
+  <button class="ghost" id="reset" type="button">Nuovo volo</button></div>
 </header>
 
 <main class="wrap">
@@ -169,6 +172,11 @@ const DEF={...FLIGHT,name:'Luca Bortolot',ac:'737',sc:'board',first:'it',rs:18,r
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S={...DEF,...s}}catch(e){}
 S.greet=autoGreet();
+function applyTheme(){
+  const t=S.theme==='light'||S.theme==='dark'?S.theme:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  document.documentElement.setAttribute('data-theme',t);
+  document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.themeSet===t)));
+}
 const save=()=>{try{const {greet,...rest}=S;localStorage.setItem(KEY,JSON.stringify(rest))}catch(e){}};
 
 const O={
@@ -434,6 +442,7 @@ document.addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;
   if(b.dataset.v!==undefined){S[b.dataset.k]=b.dataset.v;save();renderForm();renderOut();
     const again=document.querySelector(`[data-k="${b.dataset.k}"][data-v="${b.dataset.v}"]`);again&&again.focus();return}
+  if(b.dataset.themeSet){S.theme=b.dataset.themeSet;save();applyTheme();return}
   if(b.dataset.sc){S.sc=b.dataset.sc;save();renderForm();renderOut();return}
   switch(b.id){
     case 'swap':S.first=S.first==='it'?'en':'it';save();renderOut();break;
@@ -456,7 +465,7 @@ document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset
   save();renderOut()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('reader').hidden)closeReader()});
 
-renderForm();renderApInfo();renderOut();
+applyTheme();renderForm();renderApInfo();renderOut();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
