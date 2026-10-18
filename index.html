@@ -270,20 +270,17 @@ const SC=[
      `Once airborne, our flight time will be around ${dur('en')}. ${wxEn()}`,
      `Should there be any updates or changes, we will of course keep you informed.`,
      `We apologize for the delay and thank you for your patience and understanding. On behalf of the entire crew, we hope you enjoy your time on board.`]})},
- {id:'cruise',it:'Crociera',en:'Enroute',fields:['cruiseAlt','gs','posMode','pos','posEn','etaMode','etaTime','destWx','temp'],
-  tip:'Se siete in ritardo, indica un orario preciso di atterraggio senza usare la parola «ritardo».',
-  build:()=>{const posE=String(S.posEn).trim()?'posEn':'pos';const eve=S.greet==='s';
+ {id:'cruise',it:'Crociera',en:'Enroute',fields:['cruiseAlt','gs','destWx','temp'],
+  build:()=>{const eve=S.greet==='s';
    return{
    it:[`${o('greet','it')}, signore e signori, è il Comandante ${NAME}: benvenuti a bordo di questo volo Neos per ${v('dest')}.`,
      `Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`,
-     `${o('posMode','it')} ${v('pos')} e prevediamo di atterrare a destinazione ${S.etaMode==='time'?`alle ore ${v('etaTime')} locali`:'in orario'}.`,
      `L’ultimo bollettino meteorologico di ${v('dest')} riporta ${o('destWx','it')}, con una temperatura al suolo di ${v('temp')} gradi centigradi.`,
-     `Grazie per aver scelto di volare con noi: rilassatevi e godetevi il volo. Vi auguriamo un buon viaggio e una buona ${eve?'serata':'giornata'}.`],
+     `Grazie per aver scelto di volare con noi. Vi auguriamo un buon viaggio e una buona ${eve?'serata':'giornata'}.`],
    en:[`${o('greet','en')}, ladies and gentlemen, this is your Captain ${NAME}, and welcome aboard this Neos flight to ${v('dest')}.`,
      `We have now reached our cruising altitude of about ${conv(altM(),'en')} metres, and our ground speed is about ${conv(gsK(),'en')} km/h.`,
-     `${o('posMode','en')} ${v(posE)}, and we expect to land at our destination ${S.etaMode==='time'?`at ${v('etaTime')} local time`:'on time'}.`,
      `The latest weather report from ${v('dest')} shows ${o('destWx','en')}, with a ground temperature of ${v('temp')} degrees Celsius.`,
-     `Thank you for choosing to fly with us: sit back, relax and enjoy the flight. We wish you a pleasant journey and a good ${eve?'evening':'day'}.`]}}},
+     `Thank you for choosing to fly with us. We wish you a pleasant journey and a good ${eve?'evening':'day'}.`]}}},
  {id:'turb',it:'Fine turbolenza',en:'End of turbulence',fields:[],
   build:()=>({
    it:[`Signore e signori, è il Comandante, dalla cabina di pilotaggio.`,`Abbiamo superato l’area di turbolenza e le condizioni di volo sono tornate tranquille; abbiamo quindi spento il segnale delle cinture di sicurezza.`,
