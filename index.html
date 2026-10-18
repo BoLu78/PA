@@ -132,7 +132,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
     </div>
     <div class="bar">
       <button class="primary" id="read" type="button">Leggi a schermo intero</button>
-      <button class="sq" id="swap" type="button" aria-label="Inverti ordine lingue">IT ⇄ EN</button>
+      <button class="sq" id="swap" type="button">Passa a English</button>
       <button class="sq" id="smaller" type="button" aria-label="Testo più piccolo">A−</button>
       <button class="sq" id="bigger" type="button" aria-label="Testo più grande">A+</button>
     </div>
@@ -361,13 +361,13 @@ function renderOut(){
   const ua=document.getElementById('u-cruiseAlt'),ug=document.getElementById('u-gs');
   if(ua){const m=altM();ua.textContent=m==null?'':`≈ ${m.toLocaleString('it-IT')} m`}
   if(ug){const k=gsK();ug.textContent=k==null?'':`≈ ${k} km/h`}
-  const gaps=(last.it.join('')+last.en.join('')).split('class="gap"').length-1;
+  const gaps=last[S.first].join('').split('class="gap"').length-1;
   const st=document.getElementById('status');
   st.textContent=gaps?`${gaps} ${gaps===1?'spazio':'spazi'} da completare`:'Pronto da leggere';
   st.className='status'+(gaps?'':' ok');
   const L={it:'Italiano',en:'English'};
-  const ord=S.first==='it'?['it','en']:['en','it'];
-  document.getElementById('out').innerHTML=ord.map(l=>`<div class="lang"><div class="lhead"><span class="lab">${L[l]}</span></div><div class="txt" id="txt-${l}">${last[l].map(p=>`<p>${p}</p>`).join('')}</div></div>`).join('');
+  document.getElementById('swap').textContent=S.first==='it'?'Passa a English':'Passa a Italiano';
+  document.getElementById('out').innerHTML=[S.first].map(l=>`<div class="lang"><div class="lhead"><span class="lab">${L[l]}</span></div><div class="txt" id="txt-${l}">${last[l].map(p=>`<p>${p}</p>`).join('')}</div></div>`).join('');
   if(!document.getElementById('reader').hidden)renderReader();
 }
 
