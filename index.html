@@ -41,6 +41,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 .top{max-width:1180px;margin:0 auto 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 h1{margin:2px 0 0;font-size:26px;font-weight:600;letter-spacing:-.01em}
+.resetbtn{background:var(--surface);border:1.5px solid var(--accent);color:var(--accent);border-radius:6px;padding:7px 16px;font-size:14px;font-weight:600}
+.resetbtn[data-arm]{background:var(--accent);color:var(--on-accent)}
 .ghost{background:transparent;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:13px;color:var(--muted)}
 .hbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .seg.theme button{padding:6px 11px;font-size:13px}
@@ -111,11 +113,11 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.3</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.4</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
-  <button class="ghost" id="reset" type="button">Nuovo volo</button></div>
+  <button class="resetbtn" id="reset" type="button">Reset</button></div>
 </header>
 
 <main class="wrap">
@@ -454,8 +456,9 @@ document.addEventListener('click',async e=>{
     case 'rsmaller':S.rz=Math.max(18,S.rz-3);save();renderOut();break;
     case 'rbigger':S.rz=Math.min(56,S.rz+3);save();renderOut();break;
     case 'reset':
-      if(b.dataset.arm){Object.assign(S,FLIGHT);save();renderForm();renderOut();b.textContent='Nuovo volo';delete b.dataset.arm}
-      else{b.dataset.arm='1';b.textContent='Tocca ancora per svuotare';setTimeout(()=>{if(b.dataset.arm){delete b.dataset.arm;b.textContent='Nuovo volo'}},3000)}
+      if(b.dataset.arm){Object.assign(S,FLIGHT,{sc:'board',first:'it',rs:DEF.rs,rz:DEF.rz,ac:DEF.ac});S.greet=autoGreet();save();
+        renderForm();renderOut();window.scrollTo(0,0);b.textContent='Reset';delete b.dataset.arm}
+      else{b.dataset.arm='1';b.textContent='Conferma reset';setTimeout(()=>{if(b.dataset.arm){delete b.dataset.arm;b.textContent='Reset'}},3000)}
       break;
   }
 });
