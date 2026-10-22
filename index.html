@@ -113,7 +113,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.4</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.5</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
@@ -170,7 +170,7 @@ const autoGreet=()=>{const h=new Date().getHours();return h<12?'m':h<18?'p':'s'}
 const FLIGHT={code:'',dest:'',destEn:'',doors:'',ftH:'',ftM:'',routeWx:'good',destWx:'sun',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
   role:'cpt',cruiseAlt:'',altUnit:'ft',gs:'',gsUnit:'kts',posMode:'over',pos:'',posEn:'',etaMode:'ontime',etaTime:'',
   maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:''};
-const DEF={...FLIGHT,name:'Luca Bortolot',ac:'737',sc:'board',first:'it',rs:18,rz:28};
+const DEF={...FLIGHT,name:'',ac:'737',sc:'board',first:'it',rs:18,rz:28};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S={...DEF,...s}}catch(e){}
 S.greet=autoGreet();
@@ -212,6 +212,7 @@ const O={
 };
 
 const F={
+  name:{t:'text',label:'Nome del Comandante',ph:'Nome e cognome',wide:1},
   greet:{t:'seg',label:'Saluto'},
   ac:{t:'seg',label:'Aereo'},
   code:{t:'text',label:'Codice ICAO o IATA',ph:'es. HESH o SSH',wide:1},
@@ -295,16 +296,16 @@ function renderApInfo(){
   el.innerHTML=`<b>${esc(r.icao)} / ${esc(r.iata)}</b> · ${esc(r.name)} · ${esc(r.cc)} · `+(r.checked?'<span class="ok">nome controllato</span>':'<span class="warn">nome dal database: verificalo</span>');
 }
 const dEn=()=>String(S.destEn).trim()?v('destEn'):v('dest');
-const NAME='Luca Bortolot';
+const NAME_=()=>v('name');
 /* quota: piedi (o FL se < 1000) → metri arrotondati a 100; velocità: nodi → km/h arrotondati a 10 */
 const altM=()=>{const x=parseInt(String(S.cruiseAlt).replace(/[^\d]/g,''),10);if(isNaN(x)||!x)return null;const ft=x<1000?x*100:x;return Math.round(ft*0.3048/100)*100};
 const gsK=()=>{const x=parseInt(String(S.gs).replace(/[^\d]/g,''),10);if(isNaN(x)||!x)return null;return Math.round(x*1.852/10)*10};
 const conv=(val,l)=>val==null?GAP:`<b>${val.toLocaleString(l==='it'?'it-IT':'en-GB')}</b>`;
 const cause=(k,l,itK,enK,pre)=>S[k]==='other'?(pre?pre[l]:'')+v(l==='it'?itK:enK):o(k,l);
 
-const introIt=()=>[`${o('greet','it')}, signore e signori. È il Comandante che vi parla, il mio nome è ${NAME}.`,
+const introIt=()=>[`${o('greet','it')}, signore e signori. È il Comandante che vi parla, il mio nome è ${NAME_()}.`,
   `A nome di Neos e di tutto l’equipaggio, desidero darvi il benvenuto a bordo del nostro ${o('ac','it')}, oggi diretto a ${v('dest')}.`];
-const introEn=()=>[`${o('greet','en')}, ladies and gentlemen. This is your Captain speaking. My name is ${NAME}, and on behalf of Neos and the entire crew, I would like to welcome you on board our ${o('ac','en')}, today flying to ${dEn()}.`];
+const introEn=()=>[`${o('greet','en')}, ladies and gentlemen. This is your Captain speaking. My name is ${NAME_()}, and on behalf of Neos and the entire crew, I would like to welcome you on board our ${o('ac','en')}, today flying to ${dEn()}.`];
 const wxIt=()=>`Le condizioni meteorologiche lungo la nostra rotta si prevedono generalmente ${o('routeWx','it')}. Al nostro arrivo a ${v('dest')} troveremo ${o('destWx','it')}, con una temperatura di circa ${v('temp')} gradi.`;
 const wxEn=()=>`Weather conditions along our route are expected to be generally ${o('routeWx','en')}, and at our destination we are expecting ${o('destWx','en')}, with a temperature of approximately ${v('temp')} degrees Celsius.`;
 const PRE={it:'A causa di ',en:'Due to '};
@@ -331,11 +332,11 @@ const SC=[
  {id:'cruise',it:'Crociera',en:'Enroute',fields:['cruiseAlt','gs','destWx','temp'],
   build:()=>{const eve=S.greet==='s';
    return{
-   it:[`${o('greet','it')}, signore e signori, è il Comandante ${NAME}: benvenuti a bordo di questo volo Neos per ${v('dest')}.`,
+   it:[`${o('greet','it')}, signore e signori, è il Comandante ${NAME_()}: benvenuti a bordo di questo volo Neos per ${v('dest')}.`,
      `Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`,
      `L’ultimo bollettino meteorologico di ${v('dest')} riporta ${o('destWx','it')}, con una temperatura al suolo di ${v('temp')} gradi centigradi.`,
      `Grazie per aver scelto di volare con noi. Vi auguriamo un buon viaggio e una buona ${eve?'serata':'giornata'}.`],
-   en:[`${o('greet','en')}, ladies and gentlemen, this is your Captain ${NAME}, and welcome aboard this Neos flight to ${dEn()}.`,
+   en:[`${o('greet','en')}, ladies and gentlemen, this is your Captain ${NAME_()}, and welcome aboard this Neos flight to ${dEn()}.`,
      `We have now reached our cruising altitude of about ${conv(altM(),'en')} metres, and our ground speed is about ${conv(gsK(),'en')} km/h.`,
      `The latest weather report from ${dEn()} shows ${o('destWx','en')}, with a ground temperature of ${v('temp')} degrees Celsius.`,
      `Thank you for choosing to fly with us. We wish you a pleasant journey and a good ${eve?'evening':'day'}.`]}}},
@@ -398,7 +399,7 @@ function field(k){
 }
 const cur=()=>SC.find(x=>x.id===S.sc)||SC[0];
 function renderForm(){
-  document.getElementById('common').innerHTML=['greet','ac','code'].map(field).join('')+'<p class="apinfo f wide" id="apinfo"></p>'+['dest','destEn'].map(field).join('');
+  document.getElementById('common').innerHTML=['name','greet','ac','code'].map(field).join('')+'<p class="apinfo f wide" id="apinfo"></p>'+['dest','destEn'].map(field).join('');
   document.getElementById('tiles').innerHTML=SC.map(s=>`<button type="button" class="tile" data-sc="${s.id}" aria-pressed="${s.id===S.sc}"><b>${s.en}</b></button>`).join('');
   const sc=cur();
   document.getElementById('questions').innerHTML=sc.fields.length
