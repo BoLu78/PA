@@ -19,7 +19,7 @@
 /* Layout: cartellina di cockpit a due colonne — domande a sinistra, testo da leggere a destra (una colonna su iPhone) */
 :root{
   --bg:#EEF1F4; --surface:#FFFFFF; --ink:#132030; --muted:#5A6777; --line:#D5DCE4;
-  --accent:#A9540F; --on-accent:#FFFFFF; --accent-soft:#F7E8D9; --gap:#FBE1BD; --gap-ink:#7A3D07;
+  --accent:#A9540F; --on-accent:#FFFFFF; --accent-soft:#F7E8D9; --gap:#FBE1BD; --gap-ink:#7A3D07; --emer:#C0271B; --on-emer:#FFFFFF; --emer-soft:#FCE4E1; --ok:#1F7A4D; --cab:#2F6FB0; --dp:rgba(169,84,15,.15);
   --f-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --f-read:"Source Serif 4",Georgia,"Times New Roman",serif;
@@ -27,10 +27,10 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0D1319; --surface:#151E27; --ink:#E4E9EE; --muted:#8C99A8; --line:#27333F;
-  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; color-scheme:dark}}
+  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; --emer:#F26B5B; --on-emer:#1C0705; --emer-soft:#3A1714; --ok:#5BC48E; --cab:#7DB3EA; --dp:rgba(239,162,74,.16); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0D1319; --surface:#151E27; --ink:#E4E9EE; --muted:#8C99A8; --line:#27333F;
-  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; color-scheme:dark}
+  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; --emer:#F26B5B; --on-emer:#1C0705; --emer-soft:#3A1714; --ok:#5BC48E; --cab:#7DB3EA; --dp:rgba(239,162,74,.16); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.45;
@@ -106,6 +106,55 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 .rbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 auto 18px;max-width:900px}
 .reader .txt{font-size:var(--rz);max-width:900px;margin:0 auto;line-height:1.55}
 @media (prefers-reduced-motion:no-preference){.tile,.seg button{transition:background .12s,border-color .12s}}
+.tile.emer{background:var(--emer-soft);border-color:var(--emer);color:var(--emer)}
+.tile.emer b{font-weight:700}
+.tile.emer[aria-pressed="true"]{background:var(--emer);border-color:var(--emer);color:var(--on-emer);box-shadow:none}
+.emerbtn{background:var(--emer);color:var(--on-emer);border:0;border-radius:6px;padding:8px 14px;font-weight:600;font-size:14px}
+
+/* vademecum Bomb Threat */
+.memo{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 40px) max(16px,env(safe-area-inset-left,0px))}
+.vm{max-width:1040px;margin:0 auto;display:grid;gap:14px;font-size:14px}
+.vm-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.vm h2.t{margin:0;font-size:24px;font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+.vm .sub{color:var(--muted);font-size:12.5px;margin:2px 0 0}
+.vm .principle{background:var(--emer-soft);border:2px solid var(--emer);border-radius:8px;padding:10px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.vm .principle b{font-size:19px;letter-spacing:.04em;text-transform:uppercase;color:var(--emer)}
+.vm .principle span{flex:1 1 260px;min-width:0}
+.vm-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:760px){.vm-grid{grid-template-columns:1fr}}
+.vm .decision{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-bottom:8px}
+.vm .q,.vm .yes{border:2px solid var(--ink);border-radius:8px;padding:9px 12px;background:var(--surface);font-weight:600}
+.vm .yes{border-color:var(--ok);color:var(--ok);max-width:200px}
+.vm .tag{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;display:block;margin-bottom:2px}
+.vm .no{font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--emer);letter-spacing:.06em;margin:0 0 6px 14px}
+.vm .flow{list-style:none;margin:0;padding:0;display:grid;gap:8px;position:relative}
+.vm .flow::before{content:"";position:absolute;left:17px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.vm .step{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:start}
+.vm .n{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:17px;position:relative;z-index:1}
+.vm .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.vm .card h3,.vm .box h3{margin:0 0 3px;font-size:15px;letter-spacing:.05em;text-transform:uppercase}
+.vm ul{margin:0;padding-left:16px}
+.vm li{margin:1px 0}
+.vm .step.key .n{background:var(--accent);color:var(--on-accent)}
+.vm .step.key .card{border:2px solid var(--accent);background:var(--accent-soft)}
+.vm .side{display:grid;gap:14px}
+.vm .box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.vm .nums{display:grid;gap:5px;margin:0}
+.vm .nums div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:8px;align-items:baseline;border-top:1px dashed var(--line);padding-top:5px}
+.vm .nums div:first-child{border-top:0;padding-top:0}
+.vm .nums dt{font-family:var(--f-mono);font-weight:600;color:var(--accent);font-size:13px}
+.vm .nums dd{margin:0;font-size:13px}
+.vm .found{border:2px solid var(--emer)}
+.vm .found h3{color:var(--emer)}
+.vm .mono{font-family:var(--f-mono)}
+.vm .svgwrap{overflow-x:auto}
+.vm svg{display:block;width:100%;min-width:560px;height:auto}
+.vm svg text{font-family:var(--f-mono);font-size:11px;fill:var(--ink)}
+.vm svg .m{fill:var(--muted)}
+.vm .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.vm .legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px}
+.vm footer{color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);padding-top:8px}
 </style>
 </head>
 <body>
@@ -113,7 +162,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.6</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.7</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
@@ -145,10 +194,129 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
       <button class="sq" id="swap" type="button">Passa a English</button>
       <button class="sq" id="smaller" type="button" aria-label="Testo più piccolo">A−</button>
       <button class="sq" id="bigger" type="button" aria-label="Testo più grande">A+</button>
+      <button class="emerbtn" id="memo" type="button" hidden>Procedure memo</button>
     </div>
     <div id="out"></div>
   </section>
 </main>
+
+<div class="memo" id="memov" hidden>
+<div class="vm">
+  <div class="vm-head">
+    <div>
+      <h2 class="t">In-flight Bomb Threat · B737</h2>
+      <p class="sub">Captain's quick guide. It does not replace the QRH: always run the checklist.</p>
+    </div>
+    <button class="primary" id="memoclose" type="button">Chiudi</button>
+  </div>
+
+  <div class="principle">
+    <b>Freeze the cabin</b>
+    <span>Cabin altitude must never climb. Bring the airplane down toward the cabin, not the cabin up toward the airplane.</span>
+  </div>
+
+  <div class="vm-grid">
+    <section>
+      <div class="decision">
+        <div class="q"><span class="tag">DECISION</span>Can you land and evacuate within 15 minutes?</div>
+        <div class="yes"><span class="tag">YES</span>Land and evacuate immediately</div>
+      </div>
+      <p class="no">NO ▼ full procedure</p>
+      <ol class="flow">
+        <li class="step"><span class="n">1</span><div class="card"><h3>Freeze</h3>
+          <ul><li>Maintain altitude · <span class="mono">M0.76 / 280 kt</span> · avoid turbulence</li>
+          <li>No abrupt maneuvers, no speedbrakes</li>
+          <li><b>Read and note the CABIN ALT</b></li></ul></div></li>
+        <li class="step"><span class="n">2</span><div class="card"><h3>Pick the airport</h3>
+          <ul><li>Nearest suitable with <b>elevation ≤ CABIN ALT</b></li>
+          <li>Check MEA and fuel at the low altitude</li>
+          <li>OCC / bomb assessor to evaluate the threat</li></ul></div></li>
+        <li class="step"><span class="n">3</span><div class="card"><h3>Communicate</h3>
+          <ul><li><b>MAYDAY</b> · keep ATC and OCC on the line · EOD via ATC</li>
+          <li>Brief the purser · Captain makes the PA (OMA 10.2.4.9)</li></ul></div></li>
+        <li class="step"><span class="n">4</span><div class="card"><h3>Cabin</h3>
+          <ul><li>Cabin signs ON · CAB/UTIL OFF · IFE/PASS SEAT OFF</li>
+          <li>Bomb search if time permits: aft to forward, 60–90 min</li>
+          <li>Any item nobody claims = suspect</li></ul></div></li>
+        <li class="step key"><span class="n">5</span><div class="card"><h3>Pressurization</h3>
+          <ul><li><b>LAND ALT = present CABIN ALT</b> (not field elevation)</li>
+          <li>Descend gradually to <b>CABIN + 2500 ft</b> or MEA, whichever is higher → ΔP ≈ 1 psi</li>
+          <li>At <b>ΔP 0</b>: inform the cabin → <b>MAN</b> → <b>OUTFLOW OPEN</b> until fully open</li></ul></div></li>
+        <li class="step"><span class="n">6</span><div class="card"><h3>Landing and on the ground</h3>
+          <ul><li>Configure early · <b>flaps 15</b></li>
+          <li>Speed: slow to protect the airplane, high if the situation is clear or the device is at 3R</li>
+          <li>Follow ATC and security · fast disembarkation with hand baggage · device at 3R: avoid the aft doors</li></ul></div></li>
+      </ol>
+    </section>
+
+    <aside class="side">
+      <div class="box">
+        <h3>Key numbers</h3>
+        <dl class="nums">
+          <div><dt>15 min</dt><dd>threshold to land and evacuate immediately</dd></div>
+          <div><dt>CABIN + 2500</dt><dd>transit altitude (or MEA, if higher)</dd></div>
+          <div><dt>≈ 1 psi</dt><dd>target ΔP; threshold to move the device</dd></div>
+          <div><dt>≤ CABIN ALT</dt><dd>maximum airport elevation</dd></div>
+          <div><dt>3R</dt><dd>LRBL door</dd></div>
+          <div><dt>4 rows</dt><dd>minimum passenger distance from the device</dd></div>
+          <div><dt>Flaps 15</dt><dd>landing configuration</dd></div>
+        </dl>
+      </div>
+      <div class="box found">
+        <h3>If a device is found</h3>
+        <ul>
+          <li><b>Do not touch it</b>: guard it and inform the Captain immediately</li>
+          <li>Keep searching: there may be more than one</li>
+          <li>Move it to <b>3R</b> only if essential and at <b>ΔP ≤ 1 psi</b> (cabin crew LRBL procedure)</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>The why</h3>
+        <ul>
+          <li>Cabin frozen: no barometric trigger</li>
+          <li>Low ΔP: less damage from a blast</li>
+          <li>Configured early: systems may fail after a blast</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section class="box">
+    <h3>Pressurization profile · MXP example</h3>
+    <p class="sub" style="margin-bottom:8px">FL320, CABIN ALT 7000 ft, Malpensa 900 ft, MEA 3000 ft. Altitudes to scale. The shaded area is ΔP.</p>
+    <div class="svgwrap">
+      <svg viewBox="0 0 680 270" role="img" aria-label="Profile: the airplane descends from FL320 to 9500 ft while the cabin stays at 7000 ft; at 7000 ft delta P is zero, switch to manual with outflow open and land at 900 ft">
+        <g stroke="var(--line)" stroke-width="1">
+          <line x1="70" y1="240" x2="650" y2="240"/>
+          <line x1="70" y1="30" x2="70" y2="240"/>
+          <line x1="70" y1="176.4" x2="650" y2="176.4" stroke-dasharray="2 4"/>
+        </g>
+        <line x1="70" y1="220.9" x2="650" y2="220.9" stroke="var(--muted)" stroke-dasharray="5 4" stroke-width="1"/>
+        <text x="76" y="216" class="m">MEA 3000</text>
+        <polygon points="70,36.4 160,36.4 285,179.5 440,179.5 490,195.5 70,195.5" fill="var(--dp)"/>
+        <polyline points="70,195.5 490,195.5 630,234.3" fill="none" stroke="var(--cab)" stroke-width="3"/>
+        <polyline points="70,36.4 160,36.4 285,179.5 440,179.5 490,195.5 630,234.3" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+        <text x="62" y="40" text-anchor="end" class="m">32000</text>
+        <text x="62" y="183" text-anchor="end" class="m">9500</text>
+        <text x="62" y="199" text-anchor="end" class="m">7000</text>
+        <text x="62" y="244" text-anchor="end" class="m">0</text>
+        <text x="76" y="28">FL320 · maintain altitude</text>
+        <text x="190" y="100" class="m">gradual descent, no speedbrakes</text>
+        <text x="300" y="170">9500 = CABIN + 2500 · ΔP ≈ 1 psi</text>
+        <text x="200" y="212" style="fill:var(--cab)">cabin frozen · LAND ALT 7000</text>
+        <circle cx="490" cy="195.5" r="5" fill="var(--emer)"/>
+        <text x="500" y="186" style="fill:var(--emer)">ΔP 0 → MAN + OUTFLOW OPEN</text>
+        <circle cx="630" cy="234.3" r="4" fill="var(--ink)"/>
+        <text x="645" y="262" text-anchor="end">MXP 900</text>
+        <text x="90" y="262" class="m">time →</text>
+      </svg>
+    </div>
+    <div class="legend"><span><i style="background:var(--ink)"></i>airplane</span><span><i style="background:var(--cab)"></i>cabin</span><span><i style="background:var(--dp);height:10px"></i>ΔP</span></div>
+  </section>
+
+  <footer>Sources: OMB B737MAX v3, QRH Bomb Threat ( ) pp. 0.4–0.9 · OMA Ed 3 Rev1, 10.2.4.1 and 10.2.4.6–10.2.4.9 · OMA APDX ED02 Rev 01, ch. G (Bomb Search Checklist, LRBL). Based on the 737-8; NG version to be verified against the NG QRH. Summary, not SOP.</footer>
+</div>
+</div>
 
 <div class="reader" id="reader" hidden>
   <div class="rbar">
@@ -384,7 +552,7 @@ const SC=[
      `Grazie per la collaborazione. Vi preghiamo di seguire sempre le indicazioni dell’equipaggio.`],
    en:[`Ladies and gentlemen, this is the Captain speaking.`,`For operational reasons, we will now proceed with an orderly deplaning of the aircraft.`,`Please remain seated and wait for the cabin crew’s instructions.`,
      `Thank you for your cooperation. Please follow the crew’s instructions at all times.`]})},
- {id:'bomb',it:'Allarme bomba',en:'Bomb warning',fields:['bombPhase','bombSearch'],
+ {id:'bomb',it:'Allarme bomba',en:'Bomb warning',emer:1,fields:['bombPhase','bombSearch'],
   tip:'Testo da OMA 10.2.4.9 / Security Manual 14.3.8. L’inglese ha piccole correzioni grammaticali; la frase sulla ricerca in italiano non è nel manuale ed è tradotta.',
   build:()=>{const g=S.bombPhase==='ground',srch=!g&&S.bombSearch==='yes';return{
    it:g?[`Signore e Signori, sono il Comandante.`,
@@ -429,7 +597,7 @@ function field(k){
 const cur=()=>SC.find(x=>x.id===S.sc)||SC[0];
 function renderForm(){
   document.getElementById('common').innerHTML=['name','greet','ac','code'].map(field).join('')+'<p class="apinfo f wide" id="apinfo"></p>'+['dest','destEn'].map(field).join('');
-  document.getElementById('tiles').innerHTML=SC.map(s=>`<button type="button" class="tile" data-sc="${s.id}" aria-pressed="${s.id===S.sc}"><b>${s.en}</b></button>`).join('');
+  document.getElementById('tiles').innerHTML=SC.map(s=>`<button type="button" class="tile${s.emer?' emer':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}"><b>${s.en}</b></button>`).join('');
   const sc=cur();
   document.getElementById('questions').innerHTML=sc.fields.length
     ?`<div class="fields">${sc.fields.map(field).join('')}</div>${sc.tip?`<p class="tip">${sc.tip}</p>`:''}`
@@ -444,6 +612,7 @@ function renderOut(){
   document.documentElement.style.setProperty('--rs',S.rs+'px');
   document.documentElement.style.setProperty('--rz',S.rz+'px');
   document.getElementById('sctitle').textContent=sc.en;
+  document.getElementById('memo').hidden=sc.id!=='bomb';
   const ua=document.getElementById('u-cruiseAlt'),ug=document.getElementById('u-gs');
   if(ua){const m=altM();ua.textContent=m==null?'':`≈ ${m.toLocaleString('it-IT')} m`}
   if(ug){const k=gsK();ug.textContent=k==null?'':`≈ ${k} km/h`}
@@ -481,6 +650,8 @@ document.addEventListener('click',async e=>{
     case 'smaller':S.rs=Math.max(14,S.rs-2);save();renderOut();break;
     case 'bigger':S.rs=Math.min(30,S.rs+2);save();renderOut();break;
     case 'read':openReader();break;
+    case 'memo':document.getElementById('memov').hidden=false;break;
+    case 'memoclose':document.getElementById('memov').hidden=true;break;
     case 'rclose':closeReader();break;
     case 'rlang':rl=rl==='it'?'en':'it';renderReader();break;
     case 'rsmaller':S.rz=Math.max(18,S.rz-3);save();renderOut();break;
@@ -496,7 +667,7 @@ document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset
   if(k==='code'){const r=apLookup(S.code);if(r&&!r.miss){S.dest=r.it;S.destEn=r.en;
     const a=document.getElementById('i-dest'),b=document.getElementById('i-destEn');if(a)a.value=r.it;if(b)b.value=r.en}renderApInfo()}
   save();renderOut()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('reader').hidden)closeReader()});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!document.getElementById('memov').hidden){document.getElementById('memov').hidden=true;return}if(!document.getElementById('reader').hidden)closeReader()});
 
 applyTheme();renderForm();renderApInfo();renderOut();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
