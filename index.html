@@ -113,7 +113,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.5</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.6</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
@@ -169,7 +169,7 @@ const autoGreet=()=>{const h=new Date().getHours();return h<12?'m':h<18?'p':'s'}
 
 const FLIGHT={code:'',dest:'',destEn:'',doors:'',ftH:'',ftM:'',routeWx:'good',destWx:'sun',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
   role:'cpt',cruiseAlt:'',altUnit:'ft',gs:'',gsUnit:'kts',posMode:'over',pos:'',posEn:'',etaMode:'ontime',etaTime:'',
-  maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:''};
+  maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:'',bombPhase:'flight',bombSearch:'yes'};
 const DEF={...FLIGHT,name:'',ac:'737',sc:'board',first:'it',rs:18,rz:28};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S={...DEF,...s}}catch(e){}
@@ -208,7 +208,9 @@ const O={
     {k:'wx',l:'Meteo',it:'A causa delle condizioni meteorologiche',en:'Due to the weather conditions'},
     {k:'tech',l:'Lieve inconveniente tecnico',it:'A causa di un leggero inconveniente tecnico',en:'Due to a minor technical issue'},
     {k:'ops',l:'Necessità operative',it:'Per necessità operative',en:'Due to operational requirements'},
-    {k:'other',l:'Altro…'}]
+    {k:'other',l:'Altro…'}],
+  bombPhase:[{k:'ground',l:'A terra'},{k:'flight',l:'In volo'}],
+  bombSearch:[{k:'yes',l:'Sì'},{k:'no',l:'No'}]
 };
 
 const F={
@@ -243,7 +245,9 @@ const F={
   divOtherEn:{t:'text',label:'Motivo (inglese)',ph:'due to …',wide:1,show:()=>S.divCause==='other'},
   altApt:{t:'text',label:'Aeroporto alternato',ph:'es. Bologna',show:()=>S.sc==='div'||S.maNext==='div'},
   landMin:{t:'num',label:'Atterraggio tra',unit:'min'},
-  techApt:{t:'text',label:'Aeroporto di atterraggio',ph:'es. Verona'}
+  techApt:{t:'text',label:'Aeroporto di atterraggio',ph:'es. Verona'},
+  bombPhase:{t:'seg',label:'Dove siamo'},
+  bombSearch:{t:'seg',label:'Gli assistenti di volo fanno una prima ricerca?',show:()=>S.bombPhase==='flight'}
 };
 
 /* ---- helpers per i testi ---- */
@@ -379,7 +383,32 @@ const SC=[
    it:[`Signore e signori, parla il Comandante.`,`Per motivi operativi, procederemo ora con uno sbarco ordinato dell’aeromobile.`,`Vi chiediamo di rimanere seduti e di attendere le istruzioni dell’equipaggio di cabina.`,
      `Grazie per la collaborazione. Vi preghiamo di seguire sempre le indicazioni dell’equipaggio.`],
    en:[`Ladies and gentlemen, this is the Captain speaking.`,`For operational reasons, we will now proceed with an orderly deplaning of the aircraft.`,`Please remain seated and wait for the cabin crew’s instructions.`,
-     `Thank you for your cooperation. Please follow the crew’s instructions at all times.`]})}
+     `Thank you for your cooperation. Please follow the crew’s instructions at all times.`]})},
+ {id:'bomb',it:'Allarme bomba',en:'Bomb warning',fields:['bombPhase','bombSearch'],
+  tip:'Testo da OMA 10.2.4.9 / Security Manual 14.3.8. L’inglese ha piccole correzioni grammaticali; la frase sulla ricerca in italiano non è nel manuale ed è tradotta.',
+  build:()=>{const g=S.bombPhase==='ground',srch=!g&&S.bombSearch==='yes';return{
+   it:g?[`Signore e Signori, sono il Comandante.`,
+     `Siamo stati informati che a bordo di uno dei velivoli parcheggiati in questo aeroporto potrebbe essere stato collocato un ordigno.`,
+     `Pur nella consapevolezza che tali segnalazioni risultano nella quasi totalità dei casi assolutamente false, siccome la vostra sicurezza è di prioritaria importanza, la compagnia ha stabilito una procedura di controllo di tutto il materiale, bagagli compresi, a bordo del velivolo.`,
+     `Ci apprestiamo quindi ad attuare la suddetta procedura con l’ausilio delle forze di polizia.`,
+     `In tal senso siete cortesemente invitati ad ottemperare a quanto vi verrà chiesto dagli assistenti di volo. In attesa di darvi ulteriori informazioni, mi scuso per gli inevitabili disagi.`]
+    :[`Signore e Signori, sono il Comandante.`,
+     `Siamo stati informati che a bordo di uno dei velivoli decollati dal nostro aeroporto di partenza potrebbe essere stato collocato un ordigno.`,
+     `Pur nella consapevolezza che tali segnalazioni risultano nella quasi totalità dei casi assolutamente false, siccome la vostra sicurezza è di prioritaria importanza, la compagnia ha stabilito una procedura di controllo di tutto il materiale, bagagli compresi, a bordo del velivolo.`,
+     `Per i motivi sopra esposti, ci apprestiamo ad atterrare quanto prima al fine di poter effettuare tutti i controlli previsti dalla procedura.`,
+     ...(srch?[`Nel frattempo gli assistenti di volo effettueranno un primo controllo della cabina: vi ringrazio per la collaborazione.`]:[]),
+     `In tal senso siete cortesemente invitati ad ottemperare a quanto vi verrà chiesto dagli assistenti di volo. In attesa di darvi ulteriori informazioni, mi scuso per gli inevitabili disagi.`],
+   en:g?[`Ladies and Gentlemen, Captain speaking.`,
+     `We have received a warning that a device has been placed on board one of the aeroplanes stationed at this airport.`,
+     `We believe this information to be a hoax, as calls of this nature have been received by airlines many times in the past. However, as your safety is of paramount importance, the Company has laid down a procedure for searching all aeroplanes and passengers’ baggage, which must be followed on these occasions.`,
+     `The Police will be assisting with this.`,
+     `For this reason, you are kindly requested to follow the instructions given by our Cabin Crew. I apologise for any inconvenience caused, and I will give you more information later on.`]
+    :[`Ladies and Gentlemen, Captain speaking.`,
+     `We have received a warning that a device has been placed on board one of the aeroplanes which took off from our departure airport.`,
+     `We consider this warning to be a hoax, as calls of this nature have been received by airlines many times in the past. However, as your safety is of paramount importance, the Company has laid down a procedure for searching all aeroplanes and passengers’ baggage, which must be followed on these occasions.`,
+     `I am therefore making arrangements to land as soon as possible, so that a thorough search of the aeroplane can be carried out.`,
+     ...(srch?[`In the meantime, the Cabin Crew will be carrying out a preliminary search. Thank you for your co-operation.`]:[]),
+     `For this reason, you are kindly requested to follow the instructions given by our Cabin Crew. I apologise for any inconvenience caused, and I will give you more information later on.`]}}}
 ];
 
 /* ---- form ---- */
