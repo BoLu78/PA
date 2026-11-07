@@ -162,7 +162,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.7</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.8</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
@@ -201,13 +201,128 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 </main>
 
 <div class="memo" id="memov" hidden>
-<div class="vm">
+<div class="vm" data-ml="it">
+  <div class="vm-head">
+    <div>
+      <h2 class="t">Bomb Threat in volo · B737</h2>
+      <p class="sub">Vademecum per il Comandante. Non sostituisce il QRH: si esegue sempre la checklist.</p>
+    </div>
+    <div class="hbtns"><button class="sq" type="button" data-memolang="en">English</button><button class="primary" type="button" data-memoclose="1">Chiudi</button></div>
+  </div>
+
+  <div class="principle">
+    <b>Cabina ferma</b>
+    <span>La cabin altitude non deve mai salire. Avvicini l'aereo alla cabina, non il contrario.</span>
+  </div>
+
+  <div class="vm-grid">
+    <section>
+      <div class="decision">
+        <div class="q"><span class="tag">DECISIONE</span>Riesci ad atterrare ed evacuare entro 15 minuti?</div>
+        <div class="yes"><span class="tag">SÌ</span>Atterra ed evacua subito</div>
+      </div>
+      <p class="no">NO ▼ procedura completa</p>
+      <ol class="flow">
+        <li class="step"><span class="n">1</span><div class="card"><h3>Congela</h3>
+          <ul><li>Mantieni la quota · <span class="mono">M0.76 / 280 kt</span> · fuori dalla turbolenza</li>
+          <li>Niente manovre brusche, niente speedbrake</li>
+          <li><b>Leggi e annota la CAB ALT</b></li></ul></div></li>
+        <li class="step"><span class="n">2</span><div class="card"><h3>Scegli il campo</h3>
+          <ul><li>Nearest suitable con <b>elevazione ≤ CAB ALT</b></li>
+          <li>Verifica MEA e fuel alla quota bassa</li>
+          <li>OCC / bomb assessor per valutare la minaccia</li></ul></div></li>
+        <li class="step"><span class="n">3</span><div class="card"><h3>Comunica</h3>
+          <ul><li><b>MAYDAY</b> · ATC e OCC sempre in linea · EOD tramite ATC</li>
+          <li>Briefing al capo cabina · PA tua (OMA 10.2.4.9)</li></ul></div></li>
+        <li class="step"><span class="n">4</span><div class="card"><h3>Cabina</h3>
+          <ul><li>Segnali ON · CAB/UTIL OFF · IFE/PASS SEAT OFF</li>
+          <li>Bomb search se c'è tempo: da poppa a prua, 60–90 min</li>
+          <li>Oggetto che nessuno riconosce = sospetto</li></ul></div></li>
+        <li class="step key"><span class="n">5</span><div class="card"><h3>Pressurizzazione</h3>
+          <ul><li><b>LAND ALT = CAB ALT attuale</b> (non l'elevazione del campo)</li>
+          <li>Scendi graduale a <b>CAB + 2500 ft</b> o MEA, se più alta → ΔP ≈ 1 psi</li>
+          <li>A <b>ΔP 0</b>: avvisa la cabina → <b>MAN</b> → <b>OUTFLOW OPEN</b> fino a fully open</li></ul></div></li>
+        <li class="step"><span class="n">6</span><div class="card"><h3>Atterraggio e a terra</h3>
+          <ul><li>Configurato presto · <b>flaps 15</b></li>
+          <li>Velocità: lenta per proteggere l'aereo, alta se situazione chiara o ordigno alla 3R</li>
+          <li>ATC e security · sbarco rapido con bagaglio a mano · ordigno alla 3R: evita le porte posteriori</li></ul></div></li>
+      </ol>
+    </section>
+
+    <aside class="side">
+      <div class="box">
+        <h3>Numeri chiave</h3>
+        <dl class="nums">
+          <div><dt>15 min</dt><dd>soglia per atterrare ed evacuare subito</dd></div>
+          <div><dt>CAB + 2500</dt><dd>quota di trasferimento (o MEA, se più alta)</dd></div>
+          <div><dt>≈ 1 psi</dt><dd>ΔP target; soglia per spostare l'ordigno</dd></div>
+          <div><dt>≤ CAB ALT</dt><dd>elevazione massima del campo</dd></div>
+          <div><dt>3R</dt><dd>porta della LRBL</dd></div>
+          <div><dt>4 file</dt><dd>distanza minima dei passeggeri dall'ordigno</dd></div>
+          <div><dt>Flaps 15</dt><dd>configurazione di atterraggio</dd></div>
+        </dl>
+      </div>
+      <div class="box found">
+        <h3>Se trovano l'oggetto</h3>
+        <ul>
+          <li><b>Non si tocca</b>: va sorvegliato e devi essere informato subito</li>
+          <li>La ricerca continua: potrebbero essercene altri</li>
+          <li>Si sposta alla <b>3R</b> solo se indispensabile e con <b>ΔP ≤ 1 psi</b> (procedura cabin crew LRBL)</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Il perché</h3>
+        <ul>
+          <li>Cabina ferma: niente innesco barometrico</li>
+          <li>ΔP basso: meno danni da un'esplosione</li>
+          <li>Configurato presto: gli impianti potrebbero non funzionare dopo</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section class="box">
+    <h3>Profilo di pressurizzazione · esempio MXP</h3>
+    <p class="sub" style="margin-bottom:8px">FL320, CAB ALT 7000 ft, Malpensa 900 ft, MEA 3000 ft. Quote in scala. L'area colorata è il ΔP.</p>
+    <div class="svgwrap">
+      <svg viewBox="0 0 680 270" role="img" aria-label="Profilo: l'aereo scende da FL320 a 9500 ft mentre la cabina resta a 7000 ft; a 7000 ft il delta P è zero, si passa in manuale con outflow aperta e si atterra a 900 ft">
+        <g stroke="var(--line)" stroke-width="1">
+          <line x1="70" y1="240" x2="650" y2="240"/>
+          <line x1="70" y1="30" x2="70" y2="240"/>
+          <line x1="70" y1="176.4" x2="650" y2="176.4" stroke-dasharray="2 4"/>
+        </g>
+        <line x1="70" y1="220.9" x2="650" y2="220.9" stroke="var(--muted)" stroke-dasharray="5 4" stroke-width="1"/>
+        <text x="76" y="216" class="m">MEA 3000</text>
+        <polygon points="70,36.4 160,36.4 285,179.5 440,179.5 490,195.5 70,195.5" fill="var(--dp)"/>
+        <polyline points="70,195.5 490,195.5 630,234.3" fill="none" stroke="var(--cab)" stroke-width="3"/>
+        <polyline points="70,36.4 160,36.4 285,179.5 440,179.5 490,195.5 630,234.3" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+        <text x="62" y="40" text-anchor="end" class="m">32000</text>
+        <text x="62" y="183" text-anchor="end" class="m">9500</text>
+        <text x="62" y="199" text-anchor="end" class="m">7000</text>
+        <text x="62" y="244" text-anchor="end" class="m">0</text>
+        <text x="76" y="28">FL320 · tieni la quota</text>
+        <text x="190" y="100" class="m">discesa graduale, no speedbrake</text>
+        <text x="300" y="170">9500 = CAB + 2500 · ΔP ≈ 1 psi</text>
+        <text x="200" y="212" style="fill:var(--cab)">cabina ferma · LAND ALT 7000</text>
+        <circle cx="490" cy="195.5" r="5" fill="var(--emer)"/>
+        <text x="500" y="186" style="fill:var(--emer)">ΔP 0 → MAN + OUTFLOW OPEN</text>
+        <circle cx="630" cy="234.3" r="4" fill="var(--ink)"/>
+        <text x="645" y="262" text-anchor="end">MXP 900</text>
+        <text x="90" y="262" class="m">tempo →</text>
+      </svg>
+    </div>
+    <div class="legend"><span><i style="background:var(--ink)"></i>aereo</span><span><i style="background:var(--cab)"></i>cabina</span><span><i style="background:var(--dp);height:10px"></i>ΔP</span></div>
+  </section>
+
+  <footer>Fonti: OMB B737MAX v3, QRH Bomb Threat ( ) pp. 0.4–0.9 · OMA Ed 3 Rev1, 10.2.4.1 e 10.2.4.6–10.2.4.9 · OMA APDX ED02 Rev 01, cap. G (Bomb Search Checklist, LRBL). Riferito al 737-8; versione NG da verificare sul QRH NG. Sintesi, non SOP.</footer>
+</div>
+<div class="vm" data-ml="en">
   <div class="vm-head">
     <div>
       <h2 class="t">In-flight Bomb Threat · B737</h2>
       <p class="sub">Captain's quick guide. It does not replace the QRH: always run the checklist.</p>
     </div>
-    <button class="primary" id="memoclose" type="button">Chiudi</button>
+    <div class="hbtns"><button class="sq" type="button" data-memolang="it">Italiano</button><button class="primary" type="button" data-memoclose="1">Close</button></div>
   </div>
 
   <div class="principle">
@@ -317,7 +432,6 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
   <footer>Sources: OMB B737MAX v3, QRH Bomb Threat ( ) pp. 0.4–0.9 · OMA Ed 3 Rev1, 10.2.4.1 and 10.2.4.6–10.2.4.9 · OMA APDX ED02 Rev 01, ch. G (Bomb Search Checklist, LRBL). Based on the 737-8; NG version to be verified against the NG QRH. Summary, not SOP.</footer>
 </div>
 </div>
-
 <div class="reader" id="reader" hidden>
   <div class="rbar">
     <button class="sq" id="rlang" type="button"></button>
@@ -638,11 +752,14 @@ async function openReader(){
 }
 function closeReader(){document.getElementById('reader').hidden=true;try{lock&&lock.release()}catch(e){}lock=null}
 
+const memoLang=l=>document.querySelectorAll('[data-ml]').forEach(x=>x.hidden=x.dataset.ml!==l);
 /* ---- eventi ---- */
 document.addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;
   if(b.dataset.v!==undefined){S[b.dataset.k]=b.dataset.v;save();renderForm();renderOut();
     const again=document.querySelector(`[data-k="${b.dataset.k}"][data-v="${b.dataset.v}"]`);again&&again.focus();return}
+  if(b.dataset.memoclose){document.getElementById('memov').hidden=true;return}
+  if(b.dataset.memolang){memoLang(b.dataset.memolang);document.getElementById('memov').scrollTo(0,0);return}
   if(b.dataset.themeSet){S.theme=b.dataset.themeSet;save();applyTheme();return}
   if(b.dataset.sc){S.sc=b.dataset.sc;save();renderForm();renderOut();return}
   switch(b.id){
@@ -650,8 +767,7 @@ document.addEventListener('click',async e=>{
     case 'smaller':S.rs=Math.max(14,S.rs-2);save();renderOut();break;
     case 'bigger':S.rs=Math.min(30,S.rs+2);save();renderOut();break;
     case 'read':openReader();break;
-    case 'memo':document.getElementById('memov').hidden=false;break;
-    case 'memoclose':document.getElementById('memov').hidden=true;break;
+    case 'memo':memoLang(S.first);document.getElementById('memov').hidden=false;break;
     case 'rclose':closeReader();break;
     case 'rlang':rl=rl==='it'?'en':'it';renderReader();break;
     case 'rsmaller':S.rz=Math.max(18,S.rz-3);save();renderOut();break;
