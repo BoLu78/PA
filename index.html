@@ -179,7 +179,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.16</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.17</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-theme-set="light">Light</button><button type="button" role="radio" data-theme-set="dark">Dark</button></div>
@@ -473,12 +473,13 @@ const autoGreet=()=>{const h=new Date().getHours();return h<12?'m':h<18?'p':'s'}
 const FLIGHT={code:'',dest:'',destEn:'',doors:'',ft:'',routeWx:'',destWx:'',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
   role:'cpt',cruiseAlt:'',altUnit:'ft',gs:'',gsUnit:'kts',posMode:'over',pos:'',posEn:'',etaMode:'ontime',etaTime:'',
   maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:'',bombPhase:'flight',bombSearch:'yes',
-  techStep:'back',techWhen:'start',techEst:'no',techMin:'',techNext:'',techItemIt:'',techItemEn:'',techWater:'no',medStep:'div',medTeam:'no'};
+  techStep:'back',techWhen:'start',techEst:'no',techMin:'',techNext:'',techItemIt:'',techItemEn:'',techWater:'no',medStep:'div',medTeam:'no',divType:'std'};
 const has=k=>String(S[k]??'').trim()!=='';
+const isMed=()=>S.sc==='div'&&S.divType==='med';
 const DEF={...FLIGHT,name:'',ac:'737',sc:'board',folder:'ground',first:'it',rs:18,rz:28};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S={...DEF,...s}}catch(e){}
-if(S.medStep==='doc')S.medStep='div';
+if(S.medStep==='doc')S.medStep='div';if(S.sc==='med'){S.sc='div';S.divType='med'}
 if(!S.ft&&(S.ftH||S.ftM))S.ft=String(parseInt(S.ftH,10)||0)+String(parseInt(S.ftM,10)||0).padStart(2,'0');delete S.ftH;delete S.ftM;
 S.greet=autoGreet();
 function applyTheme(){
@@ -525,7 +526,8 @@ const O={
   techEst:[{k:'yes',l:'Known'},{k:'no',l:'Not yet'}],
   techWater:[{k:'yes',l:'Yes'},{k:'no',l:'No'}],
   medStep:[{k:'div',l:'1 · Diversion'},{k:'resume',l:'2 · On ground'}],
-  medTeam:[{k:'yes',l:'Yes'},{k:'no',l:'No'}]
+  medTeam:[{k:'yes',l:'Yes'},{k:'no',l:'No'}],
+  divType:[{k:'std',l:'Standard'},{k:'med',l:'Medical'}]
 };
 
 const F={
@@ -543,7 +545,7 @@ const F={
   delayCause:{t:'seg',label:'Delay reason'},
   delayOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.delayCause==='other'},
   delayOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.delayCause==='other'},
-  offMin:{t:'num',label:'Off-block in',unit:'min',show:()=>(S.sc!=='gtech'||S.techStep==='fixed')&&(S.sc!=='med'||S.medStep==='resume')},
+  offMin:{t:'num',label:'Off-block in',unit:'min',show:()=>S.sc==='gtech'?S.techStep==='fixed':S.sc==='div'?(isMed()&&S.medStep==='resume'):true},
   cruiseAlt:{t:'num',label:'Altitude (ft or FL)',ph:'e.g. 37000 or 370',conv:1},
   gs:{t:'num',label:'Ground speed (kts)',ph:'e.g. 480',conv:1},
   posMode:{t:'seg',label:'Position'},
@@ -555,13 +557,14 @@ const F={
   maOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.maCause==='other'},
   maOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.maCause==='other'},
   maNext:{t:'seg',label:'Next'},
-  divCause:{t:'seg',label:'Diversion reason'},
-  divOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.divCause==='other'},
-  divOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.divCause==='other'},
-  altApt:{t:'text',label:'Alternate airport',ph:'e.g. Bologna',show:()=>S.sc==='div'||(S.sc==='ma'&&S.maNext==='div')||(S.sc==='med'&&S.medStep==='div')},
-  landMin:{t:'num',label:'Landing in',unit:'min',show:()=>S.sc!=='med'||S.medStep==='div'},
-  medStep:{t:'seg',label:'Step'},
-  medTeam:{t:'seg',label:'Medical team meeting the aircraft?',show:()=>S.medStep==='div'},
+  divType:{t:'seg',label:'Type'},
+  divCause:{t:'seg',label:'Diversion reason',show:()=>!isMed()},
+  divOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>!isMed()&&S.divCause==='other'},
+  divOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>!isMed()&&S.divCause==='other'},
+  altApt:{t:'text',label:'Alternate airport',ph:'e.g. Bologna',show:()=>(S.sc==='div'&&(!isMed()||S.medStep==='div'))||(S.sc==='ma'&&S.maNext==='div')},
+  landMin:{t:'num',label:'Landing in',unit:'min',show:()=>!isMed()||S.medStep==='div'},
+  medStep:{t:'seg',label:'Step',show:()=>isMed()},
+  medTeam:{t:'seg',label:'Medical team meeting the aircraft?',show:()=>isMed()&&S.medStep==='div'},
   techApt:{t:'text',label:'Landing airport',ph:'e.g. Verona'},
   techStep:{t:'seg',label:'Step'},
   techWhen:{t:'seg',label:'When',show:()=>S.techStep==='back'},
@@ -715,8 +718,8 @@ const SC=[
      nx==='div'?`We have decided to divert to ${v('altApt')}, and landing is expected in approximately ${v('landMin')} minutes.`
        :`We are currently ${nx==='hold'?'proceeding to a holding pattern':'setting up for another approach'}, and landing is expected in approximately ${v('landMin')} minutes.`,
      `Thank you for your patience and understanding.`]}}},
- {id:'div',it:'Diversione',en:'Diversion',fields:['divCause','divOtherIt','divOtherEn','altApt','landMin'],
-  build:()=>({
+ {id:'div',it:'Diversione',en:'Diversion',fields:['divType','divCause','divOtherIt','divOtherEn','medStep','altApt','landMin','medTeam','offMin'],
+  build:()=>isMed()?SC.find(x=>x.id==='med').build():({
    it:[`Signore e signori, vi parla il Comandante.`,
      `${cause('divCause','it','divOtherIt','divOtherEn',PRE)}, non siamo in grado di atterrare a ${v('dest')} e abbiamo deciso di dirottare su ${v('altApt')}.`,
      `Vi chiedo cortesemente di seguire le istruzioni degli Assistenti di Volo mentre preparano la cabina: saremo a terra tra circa ${v('landMin')} minuti.`,
@@ -829,7 +832,7 @@ const SC=[
 
 /* ---- cartelle e tag rapidi ---- */
 const FOLDERS=[{id:'ground',l:'Ground',sc:['board','delay','gtech']},{id:'enroute',l:'Enroute',sc:['cruise','turb']}];
-const QUICK=['deplane','ma','div','med','tech','bomb'];
+const QUICK=['deplane','ma','div','tech','bomb'];
 
 /* ---- form ---- */
 function field(k){
@@ -851,7 +854,7 @@ function renderForm(){
   document.getElementById('common').innerHTML=['name','greet','ac','code'].map(field).join('')+'<p class="apinfo f wide" id="apinfo"></p>'+['dest','destEn'].map(field).join('');
   const tile=s=>`<button type="button" class="tile${s.emer?' emer':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}"><b>${s.en}</b></button>`;
   const fo=FOLDERS.find(f=>f.id===S.folder)||FOLDERS[0];
-  document.getElementById('folders').innerHTML=FOLDERS.map(f=>`<button type="button" role="tab" class="folder" data-folder="${f.id}" aria-selected="${f.id===fo.id}">${f.l}</button>`).join('');
+  document.getElementById('folders').innerHTML=FOLDERS.map(f=>`<button type="button" role="tab" class="folder" data-folder="${f.id}" aria-selected="${f.id===fo.id&&f.sc.includes(S.sc)}">${f.l}</button>`).join('');
   document.getElementById('tiles').innerHTML=fo.sc.map(id=>tile(SC.find(s=>s.id===id))).join('');
   document.getElementById('quick').innerHTML=QUICK.map(id=>{const s=SC.find(x=>x.id===id);return `<button type="button" class="qtag${s.emer?' emer':s.alt?' alt':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}">${s.en}</button>`}).join('');
   const sc=cur();
@@ -867,7 +870,7 @@ function renderOut(){
   const sc=cur();const raw=sc.build();last={it:raw.it.filter(Boolean),en:raw.en.filter(Boolean)};
   document.documentElement.style.setProperty('--rs',S.rs+'px');
   document.documentElement.style.setProperty('--rz',S.rz+'px');
-  document.getElementById('sctitle').textContent=sc.en;
+  document.getElementById('sctitle').textContent=isMed()?'Medical diversion':sc.en;
   document.getElementById('memo').hidden=sc.id!=='bomb';
   const uf=document.getElementById('u-ft');if(uf){const P=pDur(S.ft);uf.textContent=P?`= ${P.h} h ${String(P.m).padStart(2,'0')} min`:(has('ft')?'?':'')}
   const ue=document.getElementById('u-etaTime');if(ue){const c=pClk(S.etaTime);ue.textContent=c?`= ${c} LT`:(has('etaTime')?'?':'')}
@@ -905,7 +908,7 @@ document.addEventListener('click',async e=>{
   if(b.dataset.memoclose){document.getElementById('memov').hidden=true;return}
   if(b.dataset.memolang){memoLang(b.dataset.memolang);document.getElementById('memov').scrollTo(0,0);return}
   if(b.dataset.themeSet){S.theme=b.dataset.themeSet;save();applyTheme();return}
-  if(b.dataset.folder){S.folder=b.dataset.folder;save();renderForm();return}
+  if(b.dataset.folder){S.folder=b.dataset.folder;const f=FOLDERS.find(x=>x.id===S.folder);if(f)S.sc=f.sc[0];save();renderForm();renderOut();return}
   if(b.dataset.sc){S.sc=b.dataset.sc;save();renderForm();renderOut();return}
   switch(b.id){
     case 'swap':S.first=S.first==='it'?'en':'it';save();renderOut();break;
