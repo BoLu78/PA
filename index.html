@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -111,6 +111,16 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 .rbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 auto 18px;max-width:900px}
 .reader .txt{font-size:var(--rz);max-width:900px;margin:0 auto;line-height:1.55}
 @media (prefers-reduced-motion:no-preference){.tile,.seg button{transition:background .12s,border-color .12s}}
+.folders{display:flex;gap:6px;margin-bottom:10px}
+.folder{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:8px 8px 4px 4px;padding:10px 12px;font-weight:600;font-size:15px;text-align:left;display:flex;align-items:center;gap:8px}
+.folder::before{content:"";width:16px;height:12px;border:1.5px solid currentColor;border-radius:2px 2px 2px 2px;box-shadow:inset 0 2px 0 -0.5px currentColor;opacity:.7}
+.folder[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.qlab{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px}
+.quick{display:flex;flex-wrap:wrap;gap:8px}
+.qtag{background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
+.qtag[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.qtag.emer{background:var(--emer-soft);border-color:var(--emer);color:var(--emer);font-weight:700}
+.qtag.emer[aria-pressed="true"]{background:var(--emer);color:var(--on-emer)}
 .tile.emer{background:var(--emer-soft);border-color:var(--emer);color:var(--emer)}
 .tile.emer b{font-weight:700}
 .tile.emer[aria-pressed="true"]{background:var(--emer);border-color:var(--emer);color:var(--on-emer);box-shadow:none}
@@ -167,25 +177,28 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.10</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.12</span></div>
     <h1>PA</h1>
   </div>
-  <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Sfondo"><button type="button" role="radio" data-theme-set="light">Chiaro</button><button type="button" role="radio" data-theme-set="dark">Scuro</button></div>
+  <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-theme-set="light">Light</button><button type="button" role="radio" data-theme-set="dark">Dark</button></div>
   <button class="resetbtn" id="reset" type="button">Reset</button></div>
 </header>
 
 <main class="wrap">
   <div class="col">
     <section class="panel" aria-labelledby="t-volo">
-      <h2 class="ptitle" id="t-volo">Volo</h2>
+      <h2 class="ptitle" id="t-volo">Flight</h2>
       <div class="fields" id="common"></div>
     </section>
     <section class="panel" aria-labelledby="t-sc">
-      <h2 class="ptitle" id="t-sc">Situazione</h2>
+      <h2 class="ptitle" id="t-sc">Situation</h2>
+      <div class="folders" id="folders" role="tablist" aria-label="Folders"></div>
       <div class="tiles" id="tiles"></div>
+      <div class="qlab">Quick access</div>
+      <div class="quick" id="quick"></div>
     </section>
     <section class="panel" aria-labelledby="t-q">
-      <h2 class="ptitle" id="t-q">Domande</h2>
+      <h2 class="ptitle" id="t-q">Inputs</h2>
       <div id="questions"></div>
     </section>
   </div>
@@ -195,10 +208,10 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
       <span class="status" id="status"></span>
     </div>
     <div class="bar">
-      <button class="primary" id="read" type="button">Leggi a schermo intero</button>
-      <button class="sq" id="swap" type="button">Passa a English</button>
-      <button class="sq" id="smaller" type="button" aria-label="Testo più piccolo">A−</button>
-      <button class="sq" id="bigger" type="button" aria-label="Testo più grande">A+</button>
+      <button class="primary" id="read" type="button">Full screen</button>
+      <button class="sq" id="swap" type="button">Switch to English</button>
+      <button class="sq" id="smaller" type="button" aria-label="Smaller text">A−</button>
+      <button class="sq" id="bigger" type="button" aria-label="Larger text">A+</button>
       <button class="emerbtn" id="memo" type="button" hidden>Procedure memo</button>
     </div>
     <div id="out"></div>
@@ -440,10 +453,10 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 <div class="reader" id="reader" hidden>
   <div class="rbar">
     <button class="sq" id="rlang" type="button"></button>
-    <button class="sq" id="rsmaller" type="button" aria-label="Testo più piccolo">A−</button>
-    <button class="sq" id="rbigger" type="button" aria-label="Testo più grande">A+</button>
+    <button class="sq" id="rsmaller" type="button" aria-label="Smaller text">A−</button>
+    <button class="sq" id="rbigger" type="button" aria-label="Larger text">A+</button>
     <span style="flex:1"></span>
-    <button class="primary" id="rclose" type="button">Chiudi</button>
+    <button class="primary" id="rclose" type="button">Close</button>
   </div>
   <div class="txt" id="rtxt"></div>
 </div>
@@ -456,8 +469,9 @@ const autoGreet=()=>{const h=new Date().getHours();return h<12?'m':h<18?'p':'s'}
 
 const FLIGHT={code:'',dest:'',destEn:'',doors:'',ftH:'',ftM:'',routeWx:'good',destWx:'sun',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
   role:'cpt',cruiseAlt:'',altUnit:'ft',gs:'',gsUnit:'kts',posMode:'over',pos:'',posEn:'',etaMode:'ontime',etaTime:'',
-  maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:'',bombPhase:'flight',bombSearch:'yes'};
-const DEF={...FLIGHT,name:'',ac:'737',sc:'board',first:'it',rs:18,rz:28};
+  maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:'',bombPhase:'flight',bombSearch:'yes',
+  techStep:'back',techWhen:'start',techEst:'no',techMin:'',techNext:'',techItemIt:'',techItemEn:'',techWater:'no'};
+const DEF={...FLIGHT,name:'',ac:'737',sc:'board',folder:'ground',first:'it',rs:18,rz:28};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S={...DEF,...s}}catch(e){}
 S.greet=autoGreet();
@@ -469,72 +483,86 @@ function applyTheme(){
 const save=()=>{try{const {greet,...rest}=S;localStorage.setItem(KEY,JSON.stringify(rest))}catch(e){}};
 
 const O={
-  greet:[{k:'m',l:'Mattina',it:'Buongiorno',en:'Good morning'},{k:'p',l:'Pomeriggio',it:'Buon pomeriggio',en:'Good afternoon'},{k:'s',l:'Sera',it:'Buonasera',en:'Good evening'}],
+  greet:[{k:'m',l:'Morning',it:'Buongiorno',en:'Good morning'},{k:'p',l:'Afternoon',it:'Buon pomeriggio',en:'Good afternoon'},{k:'s',l:'Evening',it:'Buonasera',en:'Good evening'}],
   ac:[{k:'737',l:'B737',it:'Boeing 737',en:'Boeing 737'},{k:'787',l:'B787',it:'Boeing 787',en:'Boeing 787'}],
-  routeWx:[{k:'good',l:'Buone',it:'buone',en:'good'},{k:'fair',l:'Discrete',it:'discrete',en:'fair'}],
-  destWx:[{k:'sun',l:'Sereno',it:'cielo sereno',en:'sunny conditions'},{k:'cloud',l:'Nuvoloso',it:'cielo nuvoloso',en:'cloudy conditions'},{k:'rain',l:'Pioggia',it:'pioggia',en:'rainy conditions'}],
+  routeWx:[{k:'good',l:'Good',it:'buone',en:'good'},{k:'fair',l:'Fair',it:'discrete',en:'fair'}],
+  destWx:[{k:'sun',l:'Sunny',it:'cielo sereno',en:'sunny conditions'},{k:'cloud',l:'Cloudy',it:'cielo nuvoloso',en:'cloudy conditions'},{k:'rain',l:'Rain',it:'pioggia',en:'rainy conditions'}],
   delayCause:[
-    {k:'inbound',l:'Aereo in arrivo',it:'un ritardo dell’aeromobile in arrivo',en:'the late arrival of the incoming aircraft'},
-    {k:'atc',l:'Restrizioni ATC',it:'restrizioni da parte del Controllo del Traffico Aereo',en:'Air Traffic Control restrictions'},
-    {k:'wx',l:'Meteo',it:'condizioni meteorologiche',en:'weather conditions'},
-    {k:'bag',l:'Riconoscimento bagagli',it:'operazioni di riconoscimento dei bagagli',en:'a baggage identification procedure'},
-    {k:'tech',l:'Verifica tecnica',it:'una verifica tecnica',en:'a technical check'},
-    {k:'other',l:'Altro…'}],
-  role:[{k:'cpt',l:'Comandante',it:'il Comandante',en:'your Captain'},{k:'fo',l:'Primo Ufficiale',it:'il Primo Ufficiale',en:'your First Officer'}],
-  altUnit:[{k:'ft',l:'piedi',it:'piedi',en:'feet'},{k:'m',l:'metri',it:'metri',en:'metres'}],
-  gsUnit:[{k:'kts',l:'nodi',it:'nodi',en:'knots'},{k:'kmh',l:'km/h',it:'km/h',en:'km/h'}],
-  posMode:[{k:'over',l:'Sorvolando',it:'Stiamo sorvolando',en:'We are currently flying over'},{k:'to',l:'Diretti verso',it:'Ci stiamo dirigendo verso',en:'We are currently heading towards'}],
-  etaMode:[{k:'ontime',l:'In orario'},{k:'time',l:'Orario preciso'}],
+    {k:'inbound',l:'Inbound aircraft',it:'un ritardo dell’aeromobile in arrivo',en:'the late arrival of the incoming aircraft'},
+    {k:'atc',l:'ATC restrictions',it:'restrizioni da parte del Controllo del Traffico Aereo',en:'Air Traffic Control restrictions'},
+    {k:'wx',l:'Weather',it:'condizioni meteorologiche',en:'weather conditions'},
+    {k:'bag',l:'Baggage ID',it:'operazioni di riconoscimento dei bagagli',en:'a baggage identification procedure'},
+    {k:'tech',l:'Technical check',it:'una verifica tecnica',en:'a technical check'},
+    {k:'other',l:'Other…'}],
+  role:[{k:'cpt',l:'Captain',it:'il Comandante',en:'your Captain'},{k:'fo',l:'First Officer',it:'il Primo Ufficiale',en:'your First Officer'}],
+  altUnit:[{k:'ft',l:'feet',it:'piedi',en:'feet'},{k:'m',l:'metres',it:'metri',en:'metres'}],
+  gsUnit:[{k:'kts',l:'knots',it:'nodi',en:'knots'},{k:'kmh',l:'km/h',it:'km/h',en:'km/h'}],
+  posMode:[{k:'over',l:'Flying over',it:'Stiamo sorvolando',en:'We are currently flying over'},{k:'to',l:'Heading to',it:'Ci stiamo dirigendo verso',en:'We are currently heading towards'}],
+  etaMode:[{k:'ontime',l:'On time'},{k:'time',l:'Exact time'}],
   maCause:[
-    {k:'atc',l:'Richiesta ATC',it:'A causa di una richiesta del Controllo del Traffico Aereo',en:'Due to an Air Traffic Control request'},
-    {k:'wx',l:'Meteo',it:'A causa delle condizioni meteorologiche',en:'Due to the weather conditions'},
-    {k:'ops',l:'Necessità operative',it:'Per necessità operative',en:'Due to operational requirements'},
-    {k:'other',l:'Altro…'}],
-  maNext:[{k:'hold',l:'Attesa'},{k:'again',l:'Nuovo avvicinamento'},{k:'div',l:'Diversione'}],
+    {k:'atc',l:'ATC request',it:'A causa di una richiesta del Controllo del Traffico Aereo',en:'Due to an Air Traffic Control request'},
+    {k:'wx',l:'Weather',it:'A causa delle condizioni meteorologiche',en:'Due to the weather conditions'},
+    {k:'ops',l:'Operational',it:'Per necessità operative',en:'Due to operational requirements'},
+    {k:'other',l:'Other…'}],
+  maNext:[{k:'hold',l:'Holding'},{k:'again',l:'New approach'},{k:'div',l:'Diversion'}],
   divCause:[
-    {k:'wx',l:'Meteo',it:'A causa delle condizioni meteorologiche',en:'Due to the weather conditions'},
-    {k:'tech',l:'Lieve inconveniente tecnico',it:'A causa di un leggero inconveniente tecnico',en:'Due to a minor technical issue'},
-    {k:'ops',l:'Necessità operative',it:'Per necessità operative',en:'Due to operational requirements'},
-    {k:'other',l:'Altro…'}],
-  bombPhase:[{k:'ground',l:'A terra'},{k:'flight',l:'In volo'}],
-  bombSearch:[{k:'yes',l:'Sì'},{k:'no',l:'No'}]
+    {k:'wx',l:'Weather',it:'A causa delle condizioni meteorologiche',en:'Due to the weather conditions'},
+    {k:'tech',l:'Minor technical issue',it:'A causa di un leggero inconveniente tecnico',en:'Due to a minor technical issue'},
+    {k:'ops',l:'Operational',it:'Per necessità operative',en:'Due to operational requirements'},
+    {k:'other',l:'Other…'}],
+  bombPhase:[{k:'ground',l:'On ground'},{k:'flight',l:'In flight'}],
+  bombSearch:[{k:'yes',l:'Yes'},{k:'no',l:'No'}],
+  techStep:[{k:'back',l:'1 · Return to stand'},{k:'update',l:'2 · Update'},{k:'fixed',l:'3 · Fixed'}],
+  techWhen:[{k:'start',l:'After engine start',it:'Dopo la messa in moto dei motori',en:'After starting the engines'},
+    {k:'push',l:'During pushback',it:'Durante le operazioni di pushback',en:'During the pushback'},
+    {k:'taxi',l:'During taxi',it:'Durante il rullaggio',en:'While taxiing'}],
+  techEst:[{k:'yes',l:'Known'},{k:'no',l:'Not yet'}],
+  techWater:[{k:'yes',l:'Yes'},{k:'no',l:'No'}]
 };
 
 const F={
-  name:{t:'text',label:'Nome del Comandante',ph:'Nome e cognome',wide:1},
-  greet:{t:'seg',label:'Saluto'},
-  ac:{t:'seg',label:'Aereo'},
-  code:{t:'text',label:'Codice ICAO o IATA',ph:'es. HESH o SSH',wide:1},
-  dest:{t:'text',label:'Città (italiano)',ph:'es. Il Cairo'},
-  destEn:{t:'text',label:'Città (inglese)',ph:'es. Cairo'},
-  doors:{t:'num',label:'Porte chiuse tra',unit:'min'},
-  ft:{t:'hm',label:'Tempo di volo'},
-  routeWx:{t:'seg',label:'Meteo sulla rotta'},
-  destWx:{t:'seg',label:'Meteo a destinazione'},
-  temp:{t:'text',label:'Temperatura a destinazione',unit:'°C',ph:'es. 24'},
-  delayCause:{t:'seg',label:'Causa del ritardo'},
-  delayOtherIt:{t:'text',label:'Causa (italiano)',ph:'a causa di …',wide:1,show:()=>S.delayCause==='other'},
-  delayOtherEn:{t:'text',label:'Causa (inglese)',ph:'due to …',wide:1,show:()=>S.delayCause==='other'},
-  offMin:{t:'num',label:'Lasciamo il parcheggio tra',unit:'min'},
-  cruiseAlt:{t:'num',label:'Quota (piedi o FL)',ph:'es. 37000 o 370',conv:1},
-  gs:{t:'num',label:'Velocità al suolo (kts)',ph:'es. 480',conv:1},
-  posMode:{t:'seg',label:'Posizione'},
-  pos:{t:'text',label:'Riferimento geografico',ph:'es. le Alpi'},
-  posEn:{t:'text',label:'In inglese (se diverso)',ph:'es. the Alps'},
-  etaMode:{t:'seg',label:'Arrivo'},
-  etaTime:{t:'time',label:'Orario locale di atterraggio',show:()=>S.etaMode==='time'},
-  maCause:{t:'seg',label:'Motivo della riattaccata'},
-  maOtherIt:{t:'text',label:'Motivo (italiano)',ph:'a causa di …',wide:1,show:()=>S.maCause==='other'},
-  maOtherEn:{t:'text',label:'Motivo (inglese)',ph:'due to …',wide:1,show:()=>S.maCause==='other'},
-  maNext:{t:'seg',label:'E adesso?'},
-  divCause:{t:'seg',label:'Motivo della diversione'},
-  divOtherIt:{t:'text',label:'Motivo (italiano)',ph:'a causa di …',wide:1,show:()=>S.divCause==='other'},
-  divOtherEn:{t:'text',label:'Motivo (inglese)',ph:'due to …',wide:1,show:()=>S.divCause==='other'},
-  altApt:{t:'text',label:'Aeroporto alternato',ph:'es. Bologna',show:()=>S.sc==='div'||S.maNext==='div'},
-  landMin:{t:'num',label:'Atterraggio tra',unit:'min'},
-  techApt:{t:'text',label:'Aeroporto di atterraggio',ph:'es. Verona'},
-  bombPhase:{t:'seg',label:'Dove siamo'},
-  bombSearch:{t:'seg',label:'Gli assistenti di volo fanno una prima ricerca?',show:()=>S.bombPhase==='flight'}
+  name:{t:'text',label:'Captain name',ph:'Name and surname',wide:1},
+  greet:{t:'seg',label:'Greeting'},
+  ac:{t:'seg',label:'Aircraft'},
+  code:{t:'text',label:'ICAO or IATA code',ph:'e.g. HESH or SSH',wide:1},
+  dest:{t:'text',label:'City (Italian)',ph:'e.g. Il Cairo'},
+  destEn:{t:'text',label:'City (English)',ph:'e.g. Cairo'},
+  doors:{t:'num',label:'Doors closed in',unit:'min'},
+  ft:{t:'hm',label:'Flight time'},
+  routeWx:{t:'seg',label:'Enroute weather'},
+  destWx:{t:'seg',label:'Destination weather'},
+  temp:{t:'text',label:'Destination temperature',unit:'°C',ph:'e.g. 24'},
+  delayCause:{t:'seg',label:'Delay reason'},
+  delayOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.delayCause==='other'},
+  delayOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.delayCause==='other'},
+  offMin:{t:'num',label:'Off-block in',unit:'min',show:()=>S.sc!=='gtech'||S.techStep==='fixed'},
+  cruiseAlt:{t:'num',label:'Altitude (ft or FL)',ph:'e.g. 37000 or 370',conv:1},
+  gs:{t:'num',label:'Ground speed (kts)',ph:'e.g. 480',conv:1},
+  posMode:{t:'seg',label:'Position'},
+  pos:{t:'text',label:'Landmark (Italian)',ph:'e.g. le Alpi'},
+  posEn:{t:'text',label:'Landmark (English, if different)',ph:'e.g. the Alps'},
+  etaMode:{t:'seg',label:'Arrival'},
+  etaTime:{t:'time',label:'Local landing time',show:()=>S.etaMode==='time'},
+  maCause:{t:'seg',label:'Go-around reason'},
+  maOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.maCause==='other'},
+  maOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.maCause==='other'},
+  maNext:{t:'seg',label:'Next'},
+  divCause:{t:'seg',label:'Diversion reason'},
+  divOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.divCause==='other'},
+  divOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.divCause==='other'},
+  altApt:{t:'text',label:'Alternate airport',ph:'e.g. Bologna',show:()=>S.sc==='div'||S.maNext==='div'},
+  landMin:{t:'num',label:'Landing in',unit:'min'},
+  techApt:{t:'text',label:'Landing airport',ph:'e.g. Verona'},
+  techStep:{t:'seg',label:'Step'},
+  techWhen:{t:'seg',label:'When',show:()=>S.techStep==='back'},
+  techItemIt:{t:'text',label:'What is it (Italian, optional)',ph:'e.g. un sensore del carburante',wide:1,show:()=>S.techStep==='update'},
+  techItemEn:{t:'text',label:'What is it (English, optional)',ph:'e.g. a fuel sensor',wide:1,show:()=>S.techStep==='update'},
+  techEst:{t:'seg',label:'Repair time estimate',show:()=>S.techStep==='update'},
+  techMin:{t:'num',label:'Repair time',unit:'min',show:()=>S.techStep==='update'&&S.techEst==='yes'},
+  techNext:{t:'num',label:'Next update in',unit:'min',show:()=>S.techStep==='update'&&S.techEst==='no'},
+  techWater:{t:'seg',label:'Cabin crew serving water?',show:()=>S.techStep==='update'},
+  bombPhase:{t:'seg',label:'Phase'},
+  bombSearch:{t:'seg',label:'Cabin crew preliminary search?',show:()=>S.bombPhase==='flight'}
 };
 
 /* ---- helpers per i testi ---- */
@@ -582,9 +610,9 @@ function apLookup(c){
 }
 function renderApInfo(){
   const el=document.getElementById('apinfo');if(!el)return;const r=apLookup(S.code);
-  if(!r){el.innerHTML='Scrivi il codice: la città si compila da sola.';return}
-  if(r.miss){el.innerHTML='<span class="warn">Codice non trovato</span> · scrivi la città a mano.';return}
-  el.innerHTML=`<b>${esc(r.icao)} / ${esc(r.iata)}</b> · ${esc(r.name)} · ${esc(r.cc)} · `+(r.checked?'<span class="ok">nome controllato</span>':'<span class="warn">nome dal database: verificalo</span>');
+  if(!r){el.innerHTML='Type the code: the city fills in automatically.';return}
+  if(r.miss){el.innerHTML='<span class="warn">Code not found</span> · type the city manually.';return}
+  el.innerHTML=`<b>${esc(r.icao)} / ${esc(r.iata)}</b> · ${esc(r.name)} · ${esc(r.cc)} · `+(r.checked?'<span class="ok">name checked</span>':'<span class="warn">name from database: verify it</span>');
 }
 const dEn=()=>String(S.destEn).trim()?v('destEn'):v('dest');
 const NAME_=()=>v('name');
@@ -620,7 +648,7 @@ const SC=[
      `Once airborne, our flight time will be around ${dur('en')}. ${wxEn()}`,
      `Should there be any updates or changes, we will of course keep you informed.`,
      `We apologize for the delay and thank you for your patience and understanding. On behalf of the entire crew, we hope you enjoy your time on board.`]})},
- {id:'cruise',it:'Crociera',en:'Enroute',fields:['cruiseAlt','gs','destWx','temp'],
+ {id:'cruise',it:'Crociera',en:'Cruise',fields:['cruiseAlt','gs','destWx','temp'],
   build:()=>{const eve=S.greet==='s';
    return{
    it:[`${o('greet','it')}, signore e signori, è il Comandante ${NAME_()}: benvenuti a bordo di questo volo Neos per ${v('dest')}.`,
@@ -659,12 +687,53 @@ const SC=[
      `${cause('divCause','en','divOtherIt','divOtherEn',PRE)}, we are unable to land at ${dEn()} and have decided to divert to ${v('altApt')}.`,
      `Please follow the instructions of the Flight Attendants as they prepare the cabin. We will have you safely on the ground in approximately ${v('landMin')} minutes.`,
      `On behalf of your Neos crew, thank you for your patience and understanding.`]})},
- {id:'tech',it:'Problema tecnico',en:'Technical problem',fields:['techApt'],
+ {id:'tech',it:'Atterraggio precauzionale',en:'Precautionary landing',fields:['techApt'],
   build:()=>({
    it:[`Signore e signori, parla il Comandante.`,`Effettueremo un atterraggio precauzionale a ${v('techApt')} a seguito di un’indicazione tecnica.`,`Non c’è motivo di preoccuparsi.`,
      `Vi chiediamo di rimanere seduti con le cinture allacciate e di seguire le istruzioni dell’equipaggio.`],
    en:[`Ladies and gentlemen, this is the Captain.`,`We are making a precautionary landing at ${v('techApt')} due to a technical indication.`,`There is no need for concern.`,
      `Please remain seated with your seat belt fastened and follow the cabin crew’s instructions.`]})},
+  {id:'gtech',it:'Problema tecnico a terra',en:'Technical (ground)',
+   fields:['techStep','techWhen','techItemIt','techItemEn','techEst','techMin','techNext','techWater','offMin'],
+   build:()=>{const st=S.techStep,known=S.techEst==='yes',water=S.techWater==='yes';
+    const itI=String(S.techItemIt).trim(),enI=String(S.techItemEn).trim();
+    if(st==='back')return{
+     it:[`Signore e signori, è il Comandante che vi parla.`,
+      `${o('techWhen','it')} abbiamo ricevuto un’indicazione tecnica che richiede la verifica dei nostri tecnici: per questo motivo stiamo rientrando al parcheggio.`,
+      `Si tratta di una normale procedura di controllo. La vostra sicurezza ha per noi la massima priorità e partiremo soltanto quando saremo certi che tutto sia perfettamente in ordine.`,
+      `Vi aggiornerò non appena avrò maggiori informazioni dai tecnici. Nel frattempo vi chiedo di rimanere seduti con le cinture allacciate finché il segnale resterà acceso.`,
+      `Grazie per la comprensione.`],
+     en:[`Ladies and gentlemen, this is your Captain speaking.`,
+      `${o('techWhen','en')}, we received a technical indication that needs to be checked by our engineers, so we are now returning to the parking stand.`,
+      `This is a standard precautionary procedure. Your safety is our highest priority, and we will only depart once we are completely satisfied that everything is in perfect order.`,
+      `I will update you as soon as I have more information from the engineers. In the meantime, please remain seated with your seat belt fastened while the sign is on.`,
+      `Thank you for your understanding.`]};
+    if(st==='update')return{
+     it:[`Signore e signori, è il Comandante: vi aggiorno sulla situazione.`,
+      itI?`I nostri tecnici hanno individuato la causa dell’indicazione, che riguarda <b>${esc(itI)}</b>, e stanno già lavorando per risolverla.`
+         :`I nostri tecnici sono a bordo e stanno lavorando per individuare e risolvere la causa dell’indicazione.`,
+      known?`Al momento stimiamo che l’intervento richiederà circa ${v('techMin')} minuti, compresi i controlli finali e le verifiche previste.`
+           :`Al momento non sono ancora in grado di darvi una stima precisa dei tempi, e preferisco non indicarvi un orario che poi potremmo non rispettare. Vi darò un nuovo aggiornamento entro circa ${v('techNext')} minuti, anche se non ci saranno novità.`,
+      ...(water?[`Nel frattempo gli assistenti di volo passeranno in cabina con dell’acqua.`]:[]),
+      `Ci scusiamo per l’attesa e vi ringraziamo per la pazienza.`],
+     en:[`Ladies and gentlemen, this is your Captain with an update.`,
+      (enI||itI)?`Our engineers have identified the cause of the indication, which concerns <b>${esc(enI||itI)}</b>, and they are already working to fix it.`
+         :`Our engineers are on board and are working to identify and fix the cause of the indication.`,
+      known?`At the moment we expect the work to take approximately ${v('techMin')} minutes, including the final checks and required inspections.`
+           :`At this stage I am not yet able to give you an accurate time estimate, and I would rather not give you a time we might not be able to keep. I will give you another update within approximately ${v('techNext')} minutes, even if there is no news.`,
+      ...(water?[`In the meantime, our cabin crew will come through the cabin with some water.`]:[]),
+      `We apologize for the wait and thank you for your patience.`]};
+    return{
+     it:[`Signore e signori, è il Comandante, e questa volta ho una buona notizia.`,
+      `I tecnici hanno completato l’intervento: il problema è stato risolto e tutti i controlli hanno dato esito positivo.`,
+      `L’aeromobile è perfettamente efficiente e pronto per il volo. Vi assicuro che, se così non fosse, non partiremmo.`,
+      `Stiamo completando le ultime formalità e prevediamo di lasciare il parcheggio tra circa ${v('offMin')} minuti.`,
+      `Grazie di cuore per la pazienza e la comprensione. A nome di tutto l’equipaggio, ci scusiamo per il disagio.`],
+     en:[`Ladies and gentlemen, this is your Captain, and this time I have some good news.`,
+      `Our engineers have completed their work: the problem has been fixed and all checks have been completed successfully.`,
+      `The aircraft is fully serviceable and ready to fly. I can assure you that, if this were not the case, we would not depart.`,
+      `We are completing the final paperwork and expect to leave the stand in approximately ${v('offMin')} minutes.`,
+      `Thank you very much for your patience and understanding. On behalf of the entire crew, we apologize for the inconvenience.`]}}},
  {id:'deplane',it:'Sbarco',en:'De-plane',fields:[],
   build:()=>({
    it:[`Signore e signori, parla il Comandante.`,`Per motivi operativi, procederemo ora con uno sbarco ordinato dell’aeromobile.`,`Vi chiediamo di rimanere seduti e di attendere le istruzioni dell’equipaggio di cabina.`,
@@ -672,7 +741,7 @@ const SC=[
    en:[`Ladies and gentlemen, this is the Captain speaking.`,`For operational reasons, we will now proceed with an orderly deplaning of the aircraft.`,`Please remain seated and wait for the cabin crew’s instructions.`,
      `Thank you for your cooperation. Please follow the crew’s instructions at all times.`]})},
  {id:'bomb',it:'Allarme bomba',en:'Bomb warning',emer:1,fields:['bombPhase','bombSearch'],
-  tip:'Testo da OMA 10.2.4.9 / Security Manual 14.3.8. L’inglese ha piccole correzioni grammaticali; la frase sulla ricerca in italiano non è nel manuale ed è tradotta.',
+  tip:'Text from OMA 10.2.4.9 / Security Manual 14.3.8. English has minor grammar fixes; the Italian search sentence is not in the manual and is translated.',
   build:()=>{const g=S.bombPhase==='ground',srch=!g&&S.bombSearch==='yes';return{
    it:g?[`Signore e Signori, sono il Comandante.`,
      `Siamo stati informati che a bordo di uno dei velivoli parcheggiati in questo aeroporto potrebbe essere stato collocato un ordigno.`,
@@ -698,6 +767,10 @@ const SC=[
      `For this reason, you are kindly requested to follow the instructions given by our Cabin Crew. I apologise for any inconvenience caused, and I will give you more information later on.`]}}}
 ];
 
+/* ---- cartelle e tag rapidi ---- */
+const FOLDERS=[{id:'ground',l:'Ground',sc:['board','delay','gtech','deplane']},{id:'enroute',l:'Enroute',sc:['cruise','turb']}];
+const QUICK=['ma','div','tech','bomb'];
+
 /* ---- form ---- */
 function field(k){
   const d=F[k];if(d.show&&!d.show())return'';
@@ -707,8 +780,8 @@ function field(k){
   }
   if(d.t==='hm'){
     return `<div class="f"><span class="lab">${d.label}</span><div class="hm">
-      <span class="inp"><input id="i-ftH" data-k="ftH" inputmode="numeric" pattern="[0-9]*" value="${esc(S.ftH)}" aria-label="Ore"><span class="unit">h</span></span>
-      <span class="inp"><input id="i-ftM" data-k="ftM" inputmode="numeric" pattern="[0-9]*" value="${esc(S.ftM)}" aria-label="Minuti"><span class="unit">min</span></span></div></div>`;
+      <span class="inp"><input id="i-ftH" data-k="ftH" inputmode="numeric" pattern="[0-9]*" value="${esc(S.ftH)}" aria-label="Hours"><span class="unit">h</span></span>
+      <span class="inp"><input id="i-ftM" data-k="ftM" inputmode="numeric" pattern="[0-9]*" value="${esc(S.ftM)}" aria-label="Minutes"><span class="unit">min</span></span></div></div>`;
   }
   const attrs=d.t==='num'?'inputmode="numeric" pattern="[0-9]*"':d.t==='time'?'type="time"':'type="text" autocapitalize="words"';
   return `<label class="f${d.wide?' wide':''}" for="i-${k}"><span class="lab">${d.label}</span><span class="inp"><input id="i-${k}" data-k="${k}" ${attrs} placeholder="${esc(d.ph||'')}" value="${esc(S[k])}" autocomplete="off">${d.unit?`<span class="unit">${d.unit}</span>`:''}${d.conv?`<span class="unit conv" id="u-${k}"></span>`:''}</span></label>`;
@@ -716,11 +789,15 @@ function field(k){
 const cur=()=>SC.find(x=>x.id===S.sc)||SC[0];
 function renderForm(){
   document.getElementById('common').innerHTML=['name','greet','ac','code'].map(field).join('')+'<p class="apinfo f wide" id="apinfo"></p>'+['dest','destEn'].map(field).join('');
-  document.getElementById('tiles').innerHTML=SC.map(s=>`<button type="button" class="tile${s.emer?' emer':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}"><b>${s.en}</b></button>`).join('');
+  const tile=s=>`<button type="button" class="tile${s.emer?' emer':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}"><b>${s.en}</b></button>`;
+  const fo=FOLDERS.find(f=>f.id===S.folder)||FOLDERS[0];
+  document.getElementById('folders').innerHTML=FOLDERS.map(f=>`<button type="button" role="tab" class="folder" data-folder="${f.id}" aria-selected="${f.id===fo.id}">${f.l}</button>`).join('');
+  document.getElementById('tiles').innerHTML=fo.sc.map(id=>tile(SC.find(s=>s.id===id))).join('');
+  document.getElementById('quick').innerHTML=QUICK.map(id=>{const s=SC.find(x=>x.id===id);return `<button type="button" class="qtag${s.emer?' emer':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}">${s.en}</button>`}).join('');
   const sc=cur();
   document.getElementById('questions').innerHTML=sc.fields.length
     ?`<div class="fields">${sc.fields.map(field).join('')}</div>${sc.tip?`<p class="tip">${sc.tip}</p>`:''}`
-    :`<p class="none">Nessun dato da inserire: il testo è pronto.</p>`;
+    :`<p class="none">Nothing to fill in: the text is ready.</p>`;
   renderApInfo();
 }
 
@@ -737,10 +814,10 @@ function renderOut(){
   if(ug){const k=gsK();ug.textContent=k==null?'':`≈ ${k} km/h`}
   const gaps=last[S.first].join('').split('class="gap"').length-1;
   const st=document.getElementById('status');
-  st.textContent=gaps?`${gaps} ${gaps===1?'spazio':'spazi'} da completare`:'Pronto da leggere';
+  st.textContent=gaps?`${gaps} ${gaps===1?'gap':'gaps'} to fill`:'Ready to read';
   st.className='status'+(gaps?'':' ok');
-  const L={it:'Italiano',en:'English'};
-  document.getElementById('swap').textContent=S.first==='it'?'Passa a English':'Passa a Italiano';
+  const L={it:'Italian',en:'English'};
+  document.getElementById('swap').textContent=S.first==='it'?'Switch to English':'Switch to Italian';
   document.getElementById('out').innerHTML=[S.first].map(l=>`<div class="lang"><div class="lhead"><span class="lab">${L[l]}</span></div><div class="txt" id="txt-${l}">${last[l].map(p=>`<p>${p}</p>`).join('')}</div></div>`).join('');
   if(!document.getElementById('reader').hidden)renderReader();
 }
@@ -748,7 +825,7 @@ function renderOut(){
 /* ---- lettura a schermo intero ---- */
 let rl='it',lock=null;
 function renderReader(){
-  document.getElementById('rlang').textContent=rl==='it'?'Italiano → English':'English → Italiano';
+  document.getElementById('rlang').textContent=rl==='it'?'Italian → English':'English → Italian';
   document.getElementById('rtxt').innerHTML=last[rl].map(p=>`<p>${p}</p>`).join('');
 }
 async function openReader(){
@@ -766,6 +843,7 @@ document.addEventListener('click',async e=>{
   if(b.dataset.memoclose){document.getElementById('memov').hidden=true;return}
   if(b.dataset.memolang){memoLang(b.dataset.memolang);document.getElementById('memov').scrollTo(0,0);return}
   if(b.dataset.themeSet){S.theme=b.dataset.themeSet;save();applyTheme();return}
+  if(b.dataset.folder){S.folder=b.dataset.folder;save();renderForm();return}
   if(b.dataset.sc){S.sc=b.dataset.sc;save();renderForm();renderOut();return}
   switch(b.id){
     case 'swap':S.first=S.first==='it'?'en':'it';save();renderOut();break;
@@ -778,9 +856,9 @@ document.addEventListener('click',async e=>{
     case 'rsmaller':S.rz=Math.max(18,S.rz-3);save();renderOut();break;
     case 'rbigger':S.rz=Math.min(56,S.rz+3);save();renderOut();break;
     case 'reset':
-      if(b.dataset.arm){Object.assign(S,FLIGHT,{sc:'board',first:'it',rs:DEF.rs,rz:DEF.rz,ac:DEF.ac});S.greet=autoGreet();save();
+      if(b.dataset.arm){Object.assign(S,FLIGHT,{sc:'board',folder:'ground',first:'it',rs:DEF.rs,rz:DEF.rz,ac:DEF.ac});S.greet=autoGreet();save();
         renderForm();renderOut();window.scrollTo(0,0);b.textContent='Reset';delete b.dataset.arm}
-      else{b.dataset.arm='1';b.textContent='Conferma reset';setTimeout(()=>{if(b.dataset.arm){delete b.dataset.arm;b.textContent='Reset'}},3000)}
+      else{b.dataset.arm='1';b.textContent='Confirm reset';setTimeout(()=>{if(b.dataset.arm){delete b.dataset.arm;b.textContent='Reset'}},3000)}
       break;
   }
 });
@@ -790,6 +868,7 @@ document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset
   save();renderOut()});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!document.getElementById('memov').hidden){document.getElementById('memov').hidden=true;return}if(!document.getElementById('reader').hidden)closeReader()});
 
+{const f=FOLDERS.find(f=>f.sc.includes(S.sc));if(f)S.folder=f.id}
 applyTheme();renderForm();renderApInfo();renderOut();
 if('serviceWorker' in navigator&&navigator.onLine){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>

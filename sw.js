@@ -1,4 +1,4 @@
-const CACHE='pa-v1.10';
+const CACHE='pa-v1.12';
 const FILES=[
   './','./index.html','./manifest.webmanifest',
   './icon-192.png','./icon-512.png','./apple-touch-icon.png',
