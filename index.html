@@ -179,7 +179,7 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.14</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.15</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-theme-set="light">Light</button><button type="button" role="radio" data-theme-set="dark">Dark</button></div>
@@ -473,7 +473,7 @@ const autoGreet=()=>{const h=new Date().getHours();return h<12?'m':h<18?'p':'s'}
 const FLIGHT={code:'',dest:'',destEn:'',doors:'',ft:'',routeWx:'',destWx:'',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
   role:'cpt',cruiseAlt:'',altUnit:'ft',gs:'',gsUnit:'kts',posMode:'over',pos:'',posEn:'',etaMode:'ontime',etaTime:'',
   maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:'',bombPhase:'flight',bombSearch:'yes',
-  techStep:'back',techWhen:'start',techEst:'no',techMin:'',techNext:'',techItemIt:'',techItemEn:'',techWater:'no'};
+  techStep:'back',techWhen:'start',techEst:'no',techMin:'',techNext:'',techItemIt:'',techItemEn:'',techWater:'no',medStep:'doc',medTeam:'yes'};
 const has=k=>String(S[k]??'').trim()!=='';
 const DEF={...FLIGHT,name:'',ac:'737',sc:'board',folder:'ground',first:'it',rs:18,rz:28};
 let S={...DEF};
@@ -522,7 +522,9 @@ const O={
     {k:'push',l:'During pushback',it:'Durante le operazioni di pushback',en:'During the pushback'},
     {k:'taxi',l:'During taxi',it:'Durante il rullaggio',en:'While taxiing'}],
   techEst:[{k:'yes',l:'Known'},{k:'no',l:'Not yet'}],
-  techWater:[{k:'yes',l:'Yes'},{k:'no',l:'No'}]
+  techWater:[{k:'yes',l:'Yes'},{k:'no',l:'No'}],
+  medStep:[{k:'doc',l:'1 · Doctor on board?'},{k:'div',l:'2 · Diversion'},{k:'resume',l:'3 · On ground'}],
+  medTeam:[{k:'yes',l:'Yes'},{k:'no',l:'No'}]
 };
 
 const F={
@@ -540,7 +542,7 @@ const F={
   delayCause:{t:'seg',label:'Delay reason'},
   delayOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.delayCause==='other'},
   delayOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.delayCause==='other'},
-  offMin:{t:'num',label:'Off-block in',unit:'min',show:()=>S.sc!=='gtech'||S.techStep==='fixed'},
+  offMin:{t:'num',label:'Off-block in',unit:'min',show:()=>(S.sc!=='gtech'||S.techStep==='fixed')&&(S.sc!=='med'||S.medStep==='resume')},
   cruiseAlt:{t:'num',label:'Altitude (ft or FL)',ph:'e.g. 37000 or 370',conv:1},
   gs:{t:'num',label:'Ground speed (kts)',ph:'e.g. 480',conv:1},
   posMode:{t:'seg',label:'Position'},
@@ -555,8 +557,10 @@ const F={
   divCause:{t:'seg',label:'Diversion reason'},
   divOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.divCause==='other'},
   divOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.divCause==='other'},
-  altApt:{t:'text',label:'Alternate airport',ph:'e.g. Bologna',show:()=>S.sc==='div'||S.maNext==='div'},
-  landMin:{t:'num',label:'Landing in',unit:'min'},
+  altApt:{t:'text',label:'Alternate airport',ph:'e.g. Bologna',show:()=>S.sc==='div'||(S.sc==='ma'&&S.maNext==='div')||(S.sc==='med'&&S.medStep==='div')},
+  landMin:{t:'num',label:'Landing in',unit:'min',show:()=>S.sc!=='med'||S.medStep==='div'},
+  medStep:{t:'seg',label:'Step'},
+  medTeam:{t:'seg',label:'Medical team meeting the aircraft?',show:()=>S.medStep==='div'},
   techApt:{t:'text',label:'Landing airport',ph:'e.g. Verona'},
   techStep:{t:'seg',label:'Step'},
   techWhen:{t:'seg',label:'When',show:()=>S.techStep==='back'},
@@ -635,9 +639,9 @@ const gsK=()=>{const x=parseInt(String(S.gs).replace(/[^\d]/g,''),10);if(isNaN(x
 const conv=(val,l)=>val==null?GAP:`<b>${val.toLocaleString(l==='it'?'it-IT':'en-GB')}</b>`;
 const cause=(k,l,itK,enK,pre)=>S[k]==='other'?(pre?pre[l]:'')+v(l==='it'?itK:enK):o(k,l);
 
-const introIt=()=>[`${o('greet','it')}, signore e signori. È il Comandante che vi parla, il mio nome è ${NAME_()}.`,
+const introIt=()=>[`${o('greet','it')}, signore e signori, vi parla il Comandante dalla cabina di pilotaggio. Mi chiamo ${NAME_()}.`,
   `A nome di Neos e di tutto l’equipaggio, desidero darvi il benvenuto a bordo del nostro ${o('ac','it')}, oggi diretto a ${v('dest')}.`];
-const introEn=()=>[`${o('greet','en')}, ladies and gentlemen. This is your Captain speaking. My name is ${NAME_()}, and on behalf of Neos and the entire crew, I would like to welcome you on board our ${o('ac','en')}, today flying to ${dEn()}.`];
+const introEn=()=>[`${o('greet','en')}, ladies and gentlemen, this is the Captain speaking from the flight deck. My name is ${NAME_()}, and on behalf of Neos and the entire crew, I would like to welcome you on board our ${o('ac','en')}, today flying to ${dEn()}.`];
 const wxIt=()=>[has('routeWx')?`Le condizioni meteorologiche lungo la nostra rotta si prevedono generalmente ${o('routeWx','it')}.`:'',
   has('destWx')&&has('temp')?`Al nostro arrivo a ${v('dest')} troveremo ${o('destWx','it')}, con una temperatura di circa ${v('temp')} gradi.`
   :has('destWx')?`Al nostro arrivo a ${v('dest')} troveremo ${o('destWx','it')}.`
@@ -672,7 +676,7 @@ const SC=[
  {id:'cruise',it:'Crociera',en:'Cruise',fields:['cruiseAlt','gs','etaTime','destWx','temp'],
   build:()=>{const eve=S.greet==='s',A=altM()!=null,G=gsK()!=null,W=has('destWx'),T=has('temp');
    return{
-   it:[`${o('greet','it')}, signore e signori, è il Comandante ${NAME_()}: benvenuti a bordo di questo volo Neos per ${v('dest')}.`,
+   it:[`${o('greet','it')}, signore e signori, vi parla il Comandante dalla cabina di pilotaggio. Mi chiamo ${NAME_()} e, insieme a tutto l’equipaggio, vi do il benvenuto a bordo di questo volo Neos per ${v('dest')}.`,
      A&&G?`Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`
        :A?`Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri.`
        :G?`Abbiamo raggiunto la nostra quota di crociera e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`
@@ -682,7 +686,7 @@ const SC=[
        :W?`L’ultimo bollettino meteorologico di ${v('dest')} riporta ${o('destWx','it')}.`
        :T?`L’ultimo bollettino meteorologico di ${v('dest')} riporta una temperatura al suolo di ${v('temp')} gradi centigradi.`:'',
      `Grazie per aver scelto di volare con noi. Vi auguriamo un buon viaggio e una buona ${eve?'serata':'giornata'}.`],
-   en:[`${o('greet','en')}, ladies and gentlemen, this is your Captain ${NAME_()}, and welcome aboard this Neos flight to ${dEn()}.`,
+   en:[`${o('greet','en')}, ladies and gentlemen, this is the Captain speaking from the flight deck. My name is ${NAME_()}, and together with the entire crew I would like to welcome you aboard this Neos flight to ${dEn()}.`,
      A&&G?`We have now reached our cruising altitude of about ${conv(altM(),'en')} metres, and our ground speed is about ${conv(gsK(),'en')} km/h.`
        :A?`We have now reached our cruising altitude of about ${conv(altM(),'en')} metres.`
        :G?`We have now reached our cruising altitude, and our ground speed is about ${conv(gsK(),'en')} km/h.`
@@ -694,62 +698,62 @@ const SC=[
      `Thank you for choosing to fly with us. We wish you a pleasant journey and a good ${eve?'evening':'day'}.`]}}},
  {id:'turb',it:'Fine turbolenza',en:'End of turbulence',fields:['etaTime'],
   build:()=>({
-   it:[`Signore e signori, è il Comandante, dalla cabina di pilotaggio.`,`Abbiamo superato l’area di turbolenza e le condizioni di volo sono tornate tranquille; abbiamo quindi spento il segnale delle cinture di sicurezza.`,
+   it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,`Abbiamo superato l’area di turbolenza e le condizioni di volo sono tornate tranquille; abbiamo quindi spento il segnale delle cinture di sicurezza.`,
      `Vi raccomandiamo comunque di tenere sempre le cinture allacciate quando siete seduti, poiché lungo la rotta potremmo incontrare turbolenze improvvise.`,eta('it'),`Grazie per la pazienza e la collaborazione, vi auguriamo un buon proseguimento di volo.`],
-   en:[`Ladies and gentlemen, this is your Captain, speaking from the flight deck.`,`We are now clear of the turbulence and flying conditions are smooth again, so we have switched off the fasten seat belt sign.`,
+   en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,`We are now clear of the turbulence and flying conditions are smooth again, so we have switched off the fasten seat belt sign.`,
      `However, we recommend keeping your seat belt fastened while seated, as we may encounter unexpected turbulence along our route.`,eta('en'),`Thank you for your patience and cooperation, and enjoy the rest of your flight.`]})},
  {id:'ma',it:'Riattaccata',en:'Missed approach',fields:['maCause','maOtherIt','maOtherEn','maNext','altApt','landMin'],
   build:()=>{const nx=S.maNext;return{
-   it:[`Signore e signori, è il Comandante che parla.`,
+   it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,
      `${cause('maCause','it','maOtherIt','maOtherEn',PRE)}, abbiamo dovuto interrompere il nostro avvicinamento a ${v('dest')}.`,
      nx==='div'?`Abbiamo deciso di proseguire verso ${v('altApt')}, dove prevediamo di atterrare tra circa ${v('landMin')} minuti.`
        :`Al momento ${nx==='hold'?'stiamo procedendo verso un circuito di attesa':'stiamo iniziando un nuovo avvicinamento'} e prevediamo di atterrare tra circa ${v('landMin')} minuti.`,
      `Vi ringrazio per la pazienza e la comprensione.`],
-   en:[`Ladies and gentlemen, this is your Captain speaking.`,
+   en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,
      `${cause('maCause','en','maOtherIt','maOtherEn',PRE)}, we had to discontinue our approach into ${dEn()}.`,
      nx==='div'?`We have decided to divert to ${v('altApt')}, and landing is expected in approximately ${v('landMin')} minutes.`
        :`We are currently ${nx==='hold'?'proceeding to a holding pattern':'setting up for another approach'}, and landing is expected in approximately ${v('landMin')} minutes.`,
      `Thank you for your patience and understanding.`]}}},
  {id:'div',it:'Diversione',en:'Diversion',fields:['divCause','divOtherIt','divOtherEn','altApt','landMin'],
   build:()=>({
-   it:[`Signore e signori, è il Comandante che parla.`,
+   it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,
      `${cause('divCause','it','divOtherIt','divOtherEn',PRE)}, non siamo in grado di atterrare a ${v('dest')} e abbiamo deciso di dirottare su ${v('altApt')}.`,
      `Vi chiedo cortesemente di seguire le istruzioni degli Assistenti di Volo mentre preparano la cabina: saremo a terra tra circa ${v('landMin')} minuti.`,
      `A nome del vostro equipaggio Neos, vi ringrazio per la pazienza e la comprensione.`],
-   en:[`Ladies and gentlemen, this is your Captain speaking.`,
+   en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,
      `${cause('divCause','en','divOtherIt','divOtherEn',PRE)}, we are unable to land at ${dEn()} and have decided to divert to ${v('altApt')}.`,
      `Please follow the instructions of the Flight Attendants as they prepare the cabin. We will have you safely on the ground in approximately ${v('landMin')} minutes.`,
      `On behalf of your Neos crew, thank you for your patience and understanding.`]})},
  {id:'tech',it:'Atterraggio precauzionale',en:'Precautionary landing',fields:['techApt'],
   build:()=>({
-   it:[`Signore e signori, parla il Comandante.`,`Effettueremo un atterraggio precauzionale a ${v('techApt')} a seguito di un’indicazione tecnica.`,`Non c’è motivo di preoccuparsi.`,
+   it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,`Effettueremo un atterraggio precauzionale a ${v('techApt')} a seguito di un’indicazione tecnica.`,`Non c’è motivo di preoccuparsi.`,
      `Vi chiediamo di rimanere seduti con le cinture allacciate e di seguire le istruzioni dell’equipaggio.`],
-   en:[`Ladies and gentlemen, this is the Captain.`,`We are making a precautionary landing at ${v('techApt')} due to a technical indication.`,`There is no need for concern.`,
+   en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,`We are making a precautionary landing at ${v('techApt')} due to a technical indication.`,`There is no need for concern.`,
      `Please remain seated with your seat belt fastened and follow the cabin crew’s instructions.`]})},
   {id:'gtech',it:'Problema tecnico a terra',en:'Technical (ground)',
    fields:['techStep','techWhen','techItemIt','techItemEn','techEst','techMin','techNext','techWater','offMin'],
    build:()=>{const st=S.techStep,known=S.techEst==='yes',water=S.techWater==='yes';
     const itI=String(S.techItemIt).trim(),enI=String(S.techItemEn).trim();
     if(st==='back')return{
-     it:[`Signore e signori, è il Comandante che vi parla.`,
+     it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,
       `${o('techWhen','it')} abbiamo ricevuto un’indicazione tecnica che richiede la verifica dei nostri tecnici: per questo motivo stiamo rientrando al parcheggio.`,
       `Si tratta di una normale procedura di controllo. La vostra sicurezza ha per noi la massima priorità e partiremo soltanto quando saremo certi che tutto sia perfettamente in ordine.`,
       `Vi aggiornerò non appena avrò maggiori informazioni dai tecnici. Nel frattempo vi chiedo di rimanere seduti con le cinture allacciate finché il segnale resterà acceso.`,
       `Grazie per la comprensione.`],
-     en:[`Ladies and gentlemen, this is your Captain speaking.`,
+     en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,
       `${o('techWhen','en')}, we received a technical indication that needs to be checked by our engineers, so we are now returning to the parking stand.`,
       `This is a standard precautionary procedure. Your safety is our highest priority, and we will only depart once we are completely satisfied that everything is in perfect order.`,
       `I will update you as soon as I have more information from the engineers. In the meantime, please remain seated with your seat belt fastened while the sign is on.`,
       `Thank you for your understanding.`]};
     if(st==='update')return{
-     it:[`Signore e signori, è il Comandante: vi aggiorno sulla situazione.`,
+     it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio, con un aggiornamento sulla situazione.`,
       itI?`I nostri tecnici hanno individuato la causa dell’indicazione, che riguarda <b>${esc(itI)}</b>, e stanno già lavorando per risolverla.`
          :`I nostri tecnici sono a bordo e stanno lavorando per individuare e risolvere la causa dell’indicazione.`,
       known?`Al momento stimiamo che l’intervento richiederà circa ${v('techMin')} minuti, compresi i controlli finali e le verifiche previste.`
            :`Al momento non sono ancora in grado di darvi una stima precisa dei tempi, per non fornirvi indicazioni imprecise. Vi darò un nuovo aggiornamento entro circa ${v('techNext')} minuti, anche se non ci saranno novità.`,
       ...(water?[`Nel frattempo gli assistenti di volo restano a vostra disposizione per qualsiasi necessità.`]:[]),
       `Ci scusiamo per l’attesa e vi ringraziamo per la comprensione.`],
-     en:[`Ladies and gentlemen, this is your Captain with an update.`,
+     en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck with an update.`,
       (enI||itI)?`Our engineers have identified the cause of the indication, which concerns <b>${esc(enI||itI)}</b>, and they are already working to fix it.`
          :`Our engineers are on board and are working to identify and fix the cause of the indication.`,
       known?`At the moment we expect the work to take approximately ${v('techMin')} minutes, including the final checks and required inspections.`
@@ -757,21 +761,52 @@ const SC=[
       ...(water?[`In the meantime, our cabin crew remain at your disposal for anything you may need.`]:[]),
       `We apologize for the wait and thank you for your understanding.`]};
     return{
-     it:[`Signore e signori, è il Comandante: vi aggiorno sulla situazione.`,
+     it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio, con un aggiornamento sulla situazione.`,
       `I tecnici hanno completato l’intervento: il problema è stato risolto e tutti i controlli hanno dato esito positivo.`,
       `L’aeromobile è pienamente efficiente e pronto per il volo.`,
       `Stiamo completando le ultime formalità e prevediamo di lasciare il parcheggio tra circa ${v('offMin')} minuti.`,
       `Ci scusiamo per il disagio e vi ringraziamo per la comprensione.`],
-     en:[`Ladies and gentlemen, this is your Captain with an update.`,
+     en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck with an update.`,
       `Our engineers have completed their work: the problem has been fixed and all checks have been completed successfully.`,
       `The aircraft is fully serviceable and ready for departure.`,
       `We are completing the final paperwork and expect to leave the stand in approximately ${v('offMin')} minutes.`,
       `We apologize for the inconvenience and thank you for your understanding.`]}}},
+ {id:'med',it:'Emergenza medica',en:'Medical',fields:['medStep','altApt','landMin','medTeam','offMin'],
+  build:()=>{const st=S.medStep,team=S.medTeam==='yes';
+   if(st==='doc')return{
+    it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,
+     `Abbiamo a bordo un passeggero che necessita di assistenza medica.`,
+     `Se tra voi è presente un medico, un infermiere o un operatore sanitario, vi preghiamo di identificarvi con un assistente di volo, premendo il pulsante di chiamata sopra il vostro posto.`,
+     `Vi ringrazio per la collaborazione.`],
+    en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,
+     `We have a passenger on board who requires medical assistance.`,
+     `If there is a doctor, a nurse or any other healthcare professional on board, please identify yourself to a member of the cabin crew by pressing the call button above your seat.`,
+     `Thank you for your cooperation.`]};
+   if(st==='div')return{
+    it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,
+     `Un passeggero a bordo necessita di cure mediche e, per garantirgli l’assistenza più rapida possibile, abbiamo deciso di dirottare su ${v('altApt')}, dove prevediamo di atterrare tra circa ${v('landMin')} minuti.`,
+     ...(team?[`All’arrivo l’aeromobile sarà raggiunto dal personale medico.`]:[]),
+     `Vi chiedo di seguire le istruzioni degli assistenti di volo durante la preparazione della cabina e, dopo l’atterraggio, di rimanere seduti per consentire le operazioni di soccorso.`,
+     `Vi aggiornerò sul proseguimento del volo non appena possibile. Vi ringrazio per la comprensione.`],
+    en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,
+     `A passenger on board requires medical care and, to ensure they receive assistance as quickly as possible, we have decided to divert to ${v('altApt')}, where we expect to land in approximately ${v('landMin')} minutes.`,
+     ...(team?[`Medical staff will meet the aircraft on arrival.`]:[]),
+     `Please follow the instructions of the cabin crew as they prepare the cabin and, after landing, remain seated to allow the medical team to carry out their work.`,
+     `I will update you on the continuation of our flight as soon as possible. Thank you for your understanding.`]};
+   return{
+    it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,
+     `Il passeggero è stato affidato al personale medico.`,
+     `Stiamo completando le formalità necessarie e prevediamo di ripartire per ${v('dest')} tra circa ${v('offMin')} minuti.`,
+     `Ci scusiamo per il disagio e vi ringraziamo per la comprensione.`],
+    en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,
+     `The passenger is now in the care of the medical staff.`,
+     `We are completing the necessary formalities and expect to depart for ${dEn()} in approximately ${v('offMin')} minutes.`,
+     `We apologize for the inconvenience and thank you for your understanding.`]}}},
  {id:'deplane',it:'Sbarco',en:'De-plane',alt:1,fields:[],
   build:()=>({
-   it:[`Signore e signori, parla il Comandante.`,`Per motivi operativi, procederemo ora con uno sbarco ordinato dell’aeromobile.`,`Vi chiediamo di rimanere seduti e di attendere le istruzioni dell’equipaggio di cabina.`,
+   it:[`Signore e signori, vi parla il Comandante dalla cabina di pilotaggio.`,`Per motivi operativi, procederemo ora con uno sbarco ordinato dell’aeromobile.`,`Vi chiediamo di rimanere seduti e di attendere le istruzioni dell’equipaggio di cabina.`,
      `Grazie per la collaborazione. Vi preghiamo di seguire sempre le indicazioni dell’equipaggio.`],
-   en:[`Ladies and gentlemen, this is the Captain speaking.`,`For operational reasons, we will now proceed with an orderly deplaning of the aircraft.`,`Please remain seated and wait for the cabin crew’s instructions.`,
+   en:[`Ladies and gentlemen, this is the Captain speaking from the flight deck.`,`For operational reasons, we will now proceed with an orderly deplaning of the aircraft.`,`Please remain seated and wait for the cabin crew’s instructions.`,
      `Thank you for your cooperation. Please follow the crew’s instructions at all times.`]})},
  {id:'bomb',it:'Allarme bomba',en:'Bomb warning',emer:1,fields:['bombPhase','bombSearch'],
   tip:'Text from OMA 10.2.4.9 / Security Manual 14.3.8. English has minor grammar fixes; the Italian search sentence is not in the manual and is translated.',
@@ -802,7 +837,7 @@ const SC=[
 
 /* ---- cartelle e tag rapidi ---- */
 const FOLDERS=[{id:'ground',l:'Ground',sc:['board','delay','gtech']},{id:'enroute',l:'Enroute',sc:['cruise','turb']}];
-const QUICK=['deplane','ma','div','tech','bomb'];
+const QUICK=['deplane','ma','div','med','tech','bomb'];
 
 /* ---- form ---- */
 function field(k){
