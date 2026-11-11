@@ -24,7 +24,7 @@
 /* Layout: cartellina di cockpit a due colonne — domande a sinistra, testo da leggere a destra (una colonna su iPhone) */
 :root{
   --bg:#EEF1F4; --surface:#FFFFFF; --ink:#132030; --muted:#5A6777; --line:#D5DCE4;
-  --accent:#A9540F; --on-accent:#FFFFFF; --accent-soft:#F7E8D9; --gap:#FBE1BD; --gap-ink:#7A3D07; --emer:#C0271B; --on-emer:#FFFFFF; --emer-soft:#FCE4E1; --ok:#1F7A4D; --cab:#2F6FB0; --dp:rgba(169,84,15,.15);
+  --accent:#A9540F; --on-accent:#FFFFFF; --accent-soft:#F7E8D9; --gap:#FBE1BD; --gap-ink:#7A3D07; --emer:#C0271B; --on-emer:#FFFFFF; --emer-soft:#FCE4E1; --alt:#0B5FD9; --alt-soft:#DCE9FC; --on-alt:#FFFFFF; --ok:#1F7A4D; --cab:#2F6FB0; --dp:rgba(169,84,15,.15);
   --f-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --f-read:"Source Serif 4",Georgia,"Times New Roman",serif;
@@ -32,10 +32,10 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0D1319; --surface:#151E27; --ink:#E4E9EE; --muted:#8C99A8; --line:#27333F;
-  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; --emer:#F26B5B; --on-emer:#1C0705; --emer-soft:#3A1714; --ok:#5BC48E; --cab:#7DB3EA; --dp:rgba(239,162,74,.16); color-scheme:dark}}
+  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; --emer:#F26B5B; --on-emer:#1C0705; --emer-soft:#3A1714; --alt:#5AA2FF; --alt-soft:#132A4A; --on-alt:#06152B; --ok:#5BC48E; --cab:#7DB3EA; --dp:rgba(239,162,74,.16); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0D1319; --surface:#151E27; --ink:#E4E9EE; --muted:#8C99A8; --line:#27333F;
-  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; --emer:#F26B5B; --on-emer:#1C0705; --emer-soft:#3A1714; --ok:#5BC48E; --cab:#7DB3EA; --dp:rgba(239,162,74,.16); color-scheme:dark}
+  --accent:#EFA24A; --on-accent:#1A1206; --accent-soft:#2E2314; --gap:#4A3214; --gap-ink:#FFD39C; --emer:#F26B5B; --on-emer:#1C0705; --emer-soft:#3A1714; --alt:#5AA2FF; --alt-soft:#132A4A; --on-alt:#06152B; --ok:#5BC48E; --cab:#7DB3EA; --dp:rgba(239,162,74,.16); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.45;
@@ -121,6 +121,8 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 .qtag[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 .qtag.emer{background:var(--emer-soft);border-color:var(--emer);color:var(--emer);font-weight:700}
 .qtag.emer[aria-pressed="true"]{background:var(--emer);color:var(--on-emer)}
+.qtag.alt{background:var(--alt-soft);border-color:var(--alt);color:var(--alt);font-weight:700}
+.qtag.alt[aria-pressed="true"]{background:var(--alt);color:var(--on-alt)}
 .tile.emer{background:var(--emer-soft);border-color:var(--emer);color:var(--emer)}
 .tile.emer b{font-weight:700}
 .tile.emer[aria-pressed="true"]{background:var(--emer);border-color:var(--emer);color:var(--on-emer);box-shadow:none}
@@ -177,10 +179,11 @@ mark.gap{background:var(--gap);color:var(--gap-ink);border-radius:3px;padding:0 
 
 <header class="top">
   <div>
-    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.12</span></div>
+    <div class="eyebrow">Passenger Address · IT / EN · <span id="ver">v1.13</span></div>
     <h1>PA</h1>
   </div>
   <div class="hbtns"><div class="seg theme" role="radiogroup" aria-label="Theme"><button type="button" role="radio" data-theme-set="light">Light</button><button type="button" role="radio" data-theme-set="dark">Dark</button></div>
+  <button class="ghost" id="update" type="button">Update app</button>
   <button class="resetbtn" id="reset" type="button">Reset</button></div>
 </header>
 
@@ -467,10 +470,11 @@ const GAP='<mark class="gap">……</mark>';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const autoGreet=()=>{const h=new Date().getHours();return h<12?'m':h<18?'p':'s'};
 
-const FLIGHT={code:'',dest:'',destEn:'',doors:'',ftH:'',ftM:'',routeWx:'good',destWx:'sun',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
+const FLIGHT={code:'',dest:'',destEn:'',doors:'',ftH:'',ftM:'',routeWx:'',destWx:'',temp:'',delayCause:'inbound',delayOtherIt:'',delayOtherEn:'',offMin:'',
   role:'cpt',cruiseAlt:'',altUnit:'ft',gs:'',gsUnit:'kts',posMode:'over',pos:'',posEn:'',etaMode:'ontime',etaTime:'',
   maCause:'atc',maOtherIt:'',maOtherEn:'',maNext:'hold',altApt:'',landMin:'',divCause:'wx',divOtherIt:'',divOtherEn:'',techApt:'',bombPhase:'flight',bombSearch:'yes',
   techStep:'back',techWhen:'start',techEst:'no',techMin:'',techNext:'',techItemIt:'',techItemEn:'',techWater:'no'};
+const has=k=>String(S[k]??'').trim()!=='';
 const DEF={...FLIGHT,name:'',ac:'737',sc:'board',folder:'ground',first:'it',rs:18,rz:28};
 let S={...DEF};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)S={...DEF,...s}}catch(e){}
@@ -529,9 +533,9 @@ const F={
   destEn:{t:'text',label:'City (English)',ph:'e.g. Cairo'},
   doors:{t:'num',label:'Doors closed in',unit:'min'},
   ft:{t:'hm',label:'Flight time'},
-  routeWx:{t:'seg',label:'Enroute weather'},
-  destWx:{t:'seg',label:'Destination weather'},
-  temp:{t:'text',label:'Destination temperature',unit:'°C',ph:'e.g. 24'},
+  routeWx:{t:'seg',label:'Enroute weather (optional)',opt:1},
+  destWx:{t:'seg',label:'Destination weather (optional)',opt:1},
+  temp:{t:'text',label:'Destination temperature (optional)',unit:'°C',ph:'e.g. 24'},
   delayCause:{t:'seg',label:'Delay reason'},
   delayOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.delayCause==='other'},
   delayOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.delayCause==='other'},
@@ -542,7 +546,7 @@ const F={
   pos:{t:'text',label:'Landmark (Italian)',ph:'e.g. le Alpi'},
   posEn:{t:'text',label:'Landmark (English, if different)',ph:'e.g. the Alps'},
   etaMode:{t:'seg',label:'Arrival'},
-  etaTime:{t:'time',label:'Local landing time',show:()=>S.etaMode==='time'},
+  etaTime:{t:'time',label:'Landing time (local)'},
   maCause:{t:'seg',label:'Go-around reason'},
   maOtherIt:{t:'text',label:'Reason (Italian)',ph:'a causa di …',wide:1,show:()=>S.maCause==='other'},
   maOtherEn:{t:'text',label:'Reason (English)',ph:'due to …',wide:1,show:()=>S.maCause==='other'},
@@ -560,7 +564,7 @@ const F={
   techEst:{t:'seg',label:'Repair time estimate',show:()=>S.techStep==='update'},
   techMin:{t:'num',label:'Repair time',unit:'min',show:()=>S.techStep==='update'&&S.techEst==='yes'},
   techNext:{t:'num',label:'Next update in',unit:'min',show:()=>S.techStep==='update'&&S.techEst==='no'},
-  techWater:{t:'seg',label:'Cabin crew serving water?',show:()=>S.techStep==='update'},
+  techWater:{t:'seg',label:'Mention cabin crew care?',show:()=>S.techStep==='update'},
   bombPhase:{t:'seg',label:'Phase'},
   bombSearch:{t:'seg',label:'Cabin crew preliminary search?',show:()=>S.bombPhase==='flight'}
 };
@@ -625,46 +629,66 @@ const cause=(k,l,itK,enK,pre)=>S[k]==='other'?(pre?pre[l]:'')+v(l==='it'?itK:enK
 const introIt=()=>[`${o('greet','it')}, signore e signori. È il Comandante che vi parla, il mio nome è ${NAME_()}.`,
   `A nome di Neos e di tutto l’equipaggio, desidero darvi il benvenuto a bordo del nostro ${o('ac','it')}, oggi diretto a ${v('dest')}.`];
 const introEn=()=>[`${o('greet','en')}, ladies and gentlemen. This is your Captain speaking. My name is ${NAME_()}, and on behalf of Neos and the entire crew, I would like to welcome you on board our ${o('ac','en')}, today flying to ${dEn()}.`];
-const wxIt=()=>`Le condizioni meteorologiche lungo la nostra rotta si prevedono generalmente ${o('routeWx','it')}. Al nostro arrivo a ${v('dest')} troveremo ${o('destWx','it')}, con una temperatura di circa ${v('temp')} gradi.`;
-const wxEn=()=>`Weather conditions along our route are expected to be generally ${o('routeWx','en')}, and at our destination we are expecting ${o('destWx','en')}, with a temperature of approximately ${v('temp')} degrees Celsius.`;
+const wxIt=()=>[has('routeWx')?`Le condizioni meteorologiche lungo la nostra rotta si prevedono generalmente ${o('routeWx','it')}.`:'',
+  has('destWx')&&has('temp')?`Al nostro arrivo a ${v('dest')} troveremo ${o('destWx','it')}, con una temperatura di circa ${v('temp')} gradi.`
+  :has('destWx')?`Al nostro arrivo a ${v('dest')} troveremo ${o('destWx','it')}.`
+  :has('temp')?`Al nostro arrivo a ${v('dest')} troveremo una temperatura di circa ${v('temp')} gradi.`:''].filter(Boolean).join(' ');
+const wxEn=()=>[has('routeWx')?`Weather conditions along our route are expected to be generally ${o('routeWx','en')}.`:'',
+  has('destWx')&&has('temp')?`At our destination we are expecting ${o('destWx','en')}, with a temperature of approximately ${v('temp')} degrees Celsius.`
+  :has('destWx')?`At our destination we are expecting ${o('destWx','en')}.`
+  :has('temp')?`At our destination we are expecting a temperature of approximately ${v('temp')} degrees Celsius.`:''].filter(Boolean).join(' ');
+const hasFt=()=>(parseInt(S.ftH,10)||0)+(parseInt(S.ftM,10)||0)>0;
+const eta=l=>has('etaTime')?(l==='it'?`Prevediamo di atterrare a ${v('dest')} alle ore ${v('etaTime')}, ora locale.`:`We expect to land in ${dEn()} at ${v('etaTime')} local time.`):'';
 const PRE={it:'A causa di ',en:'Due to '};
 
 const SC=[
  {id:'board',it:'Imbarco',en:'Boarding',fields:['doors','ft','routeWx','destWx','temp'],
   build:()=>({
-   it:[...introIt(),`Stiamo completando gli ultimi preparativi per la partenza e prevediamo di chiudere le porte tra circa ${v('doors')} minuti. Il tempo di volo previsto per oggi sarà di circa ${dur('it')}.`,wxIt(),
+   it:[...introIt(),[has('doors')?`Stiamo completando gli ultimi preparativi per la partenza e prevediamo di chiudere le porte tra circa ${v('doors')} minuti.`:`Stiamo completando gli ultimi preparativi per la partenza.`,hasFt()?`Il tempo di volo previsto per oggi sarà di circa ${dur('it')}.`:''].filter(Boolean).join(' '),wxIt(),
      `Vi ringrazio per la vostra attenzione e, a nome di tutto l’equipaggio, vi auguro una piacevole permanenza a bordo. Ancora una volta, benvenuti a bordo di questo volo Neos.`],
-   en:[...introEn(),`We are currently completing our final preparations for departure and expect to close the doors in approximately ${v('doors')} minutes. Our flight time today will be around ${dur('en')}.`,wxEn(),
+   en:[...introEn(),[has('doors')?`We are currently completing our final preparations for departure and expect to close the doors in approximately ${v('doors')} minutes.`:`We are currently completing our final preparations for departure.`,hasFt()?`Our flight time today will be around ${dur('en')}.`:''].filter(Boolean).join(' '),wxEn(),
      `Thank you for your attention. We hope you enjoy your time on board with us and, once again, welcome aboard this Neos flight.`]})},
  {id:'delay',it:'Ritardo',en:'Delay',fields:['delayCause','delayOtherIt','delayOtherEn','offMin','ft','routeWx','destWx','temp'],
   build:()=>({
    it:[...introIt(),`Purtroppo, a causa di ${cause('delayCause','it','delayOtherIt','delayOtherEn')}, la nostra partenza subirà un ritardo.`,
      `Stiamo facendo tutto il possibile, insieme al personale di terra, per ridurre al minimo l’attesa e, al momento, prevediamo di poter lasciare il parcheggio tra circa ${v('offMin')} minuti.`,
-     `Una volta decollati, il tempo di volo previsto sarà di circa ${dur('it')}. ${wxIt()}`,
+     [hasFt()?`Una volta decollati, il tempo di volo previsto sarà di circa ${dur('it')}.`:'',wxIt()].filter(Boolean).join(' '),
      `Qualora ci fossero aggiornamenti o variazioni, vi terremo naturalmente informati.`,
      `Ci scusiamo per l’attesa e vi ringraziamo per la vostra pazienza e comprensione. A nome di tutto l’equipaggio, vi auguro una piacevole permanenza a bordo.`],
    en:[...introEn(),`Unfortunately, due to ${cause('delayCause','en','delayOtherIt','delayOtherEn')}, our departure will be delayed.`,
      `We are doing everything we can, together with our ground staff, to keep the delay to a minimum and, at the moment, we expect to be able to leave the gate in approximately ${v('offMin')} minutes.`,
-     `Once airborne, our flight time will be around ${dur('en')}. ${wxEn()}`,
+     [hasFt()?`Once airborne, our flight time will be around ${dur('en')}.`:'',wxEn()].filter(Boolean).join(' '),
      `Should there be any updates or changes, we will of course keep you informed.`,
      `We apologize for the delay and thank you for your patience and understanding. On behalf of the entire crew, we hope you enjoy your time on board.`]})},
- {id:'cruise',it:'Crociera',en:'Cruise',fields:['cruiseAlt','gs','destWx','temp'],
-  build:()=>{const eve=S.greet==='s';
+ {id:'cruise',it:'Crociera',en:'Cruise',fields:['cruiseAlt','gs','etaTime','destWx','temp'],
+  build:()=>{const eve=S.greet==='s',A=altM()!=null,G=gsK()!=null,W=has('destWx'),T=has('temp');
    return{
    it:[`${o('greet','it')}, signore e signori, è il Comandante ${NAME_()}: benvenuti a bordo di questo volo Neos per ${v('dest')}.`,
-     `Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`,
-     `L’ultimo bollettino meteorologico di ${v('dest')} riporta ${o('destWx','it')}, con una temperatura al suolo di ${v('temp')} gradi centigradi.`,
+     A&&G?`Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`
+       :A?`Abbiamo raggiunto la nostra quota di crociera di circa ${conv(altM(),'it')} metri.`
+       :G?`Abbiamo raggiunto la nostra quota di crociera e stiamo volando a una velocità rispetto al suolo di circa ${conv(gsK(),'it')} km/h.`
+       :`Abbiamo raggiunto la nostra quota di crociera.`,
+     eta('it'),
+     W&&T?`L’ultimo bollettino meteorologico di ${v('dest')} riporta ${o('destWx','it')}, con una temperatura al suolo di ${v('temp')} gradi centigradi.`
+       :W?`L’ultimo bollettino meteorologico di ${v('dest')} riporta ${o('destWx','it')}.`
+       :T?`L’ultimo bollettino meteorologico di ${v('dest')} riporta una temperatura al suolo di ${v('temp')} gradi centigradi.`:'',
      `Grazie per aver scelto di volare con noi. Vi auguriamo un buon viaggio e una buona ${eve?'serata':'giornata'}.`],
    en:[`${o('greet','en')}, ladies and gentlemen, this is your Captain ${NAME_()}, and welcome aboard this Neos flight to ${dEn()}.`,
-     `We have now reached our cruising altitude of about ${conv(altM(),'en')} metres, and our ground speed is about ${conv(gsK(),'en')} km/h.`,
-     `The latest weather report from ${dEn()} shows ${o('destWx','en')}, with a ground temperature of ${v('temp')} degrees Celsius.`,
+     A&&G?`We have now reached our cruising altitude of about ${conv(altM(),'en')} metres, and our ground speed is about ${conv(gsK(),'en')} km/h.`
+       :A?`We have now reached our cruising altitude of about ${conv(altM(),'en')} metres.`
+       :G?`We have now reached our cruising altitude, and our ground speed is about ${conv(gsK(),'en')} km/h.`
+       :`We have now reached our cruising altitude.`,
+     eta('en'),
+     W&&T?`The latest weather report from ${dEn()} shows ${o('destWx','en')}, with a ground temperature of ${v('temp')} degrees Celsius.`
+       :W?`The latest weather report from ${dEn()} shows ${o('destWx','en')}.`
+       :T?`The latest weather report from ${dEn()} shows a ground temperature of ${v('temp')} degrees Celsius.`:'',
      `Thank you for choosing to fly with us. We wish you a pleasant journey and a good ${eve?'evening':'day'}.`]}}},
- {id:'turb',it:'Fine turbolenza',en:'End of turbulence',fields:[],
+ {id:'turb',it:'Fine turbolenza',en:'End of turbulence',fields:['etaTime'],
   build:()=>({
    it:[`Signore e signori, è il Comandante, dalla cabina di pilotaggio.`,`Abbiamo superato l’area di turbolenza e le condizioni di volo sono tornate tranquille; abbiamo quindi spento il segnale delle cinture di sicurezza.`,
-     `Vi raccomandiamo comunque di tenere sempre le cinture allacciate quando siete seduti, poiché lungo la rotta potremmo incontrare turbolenze improvvise.`,`Grazie per la pazienza e la collaborazione, vi auguriamo un buon proseguimento di volo.`],
+     `Vi raccomandiamo comunque di tenere sempre le cinture allacciate quando siete seduti, poiché lungo la rotta potremmo incontrare turbolenze improvvise.`,eta('it'),`Grazie per la pazienza e la collaborazione, vi auguriamo un buon proseguimento di volo.`],
    en:[`Ladies and gentlemen, this is your Captain, speaking from the flight deck.`,`We are now clear of the turbulence and flying conditions are smooth again, so we have switched off the fasten seat belt sign.`,
-     `However, we recommend keeping your seat belt fastened while seated, as we may encounter unexpected turbulence along our route.`,`Thank you for your patience and cooperation, and enjoy the rest of your flight.`]})},
+     `However, we recommend keeping your seat belt fastened while seated, as we may encounter unexpected turbulence along our route.`,eta('en'),`Thank you for your patience and cooperation, and enjoy the rest of your flight.`]})},
  {id:'ma',it:'Riattaccata',en:'Missed approach',fields:['maCause','maOtherIt','maOtherEn','maNext','altApt','landMin'],
   build:()=>{const nx=S.maNext;return{
    it:[`Signore e signori, è il Comandante che parla.`,
@@ -714,14 +738,14 @@ const SC=[
          :`I nostri tecnici sono a bordo e stanno lavorando per individuare e risolvere la causa dell’indicazione.`,
       known?`Al momento stimiamo che l’intervento richiederà circa ${v('techMin')} minuti, compresi i controlli finali e le verifiche previste.`
            :`Al momento non sono ancora in grado di darvi una stima precisa dei tempi, e preferisco non indicarvi un orario che poi potremmo non rispettare. Vi darò un nuovo aggiornamento entro circa ${v('techNext')} minuti, anche se non ci saranno novità.`,
-      ...(water?[`Nel frattempo gli assistenti di volo passeranno in cabina con dell’acqua.`]:[]),
+      ...(water?[`Nel frattempo gli assistenti di volo si prenderanno cura di voi e restano a vostra disposizione per qualsiasi necessità.`]:[]),
       `Ci scusiamo per l’attesa e vi ringraziamo per la pazienza.`],
      en:[`Ladies and gentlemen, this is your Captain with an update.`,
       (enI||itI)?`Our engineers have identified the cause of the indication, which concerns <b>${esc(enI||itI)}</b>, and they are already working to fix it.`
          :`Our engineers are on board and are working to identify and fix the cause of the indication.`,
       known?`At the moment we expect the work to take approximately ${v('techMin')} minutes, including the final checks and required inspections.`
            :`At this stage I am not yet able to give you an accurate time estimate, and I would rather not give you a time we might not be able to keep. I will give you another update within approximately ${v('techNext')} minutes, even if there is no news.`,
-      ...(water?[`In the meantime, our cabin crew will come through the cabin with some water.`]:[]),
+      ...(water?[`In the meantime, our cabin crew will take care of you and remain at your disposal for anything you may need.`]:[]),
       `We apologize for the wait and thank you for your patience.`]};
     return{
      it:[`Signore e signori, è il Comandante, e questa volta ho una buona notizia.`,
@@ -734,7 +758,7 @@ const SC=[
       `The aircraft is fully serviceable and ready to fly. I can assure you that, if this were not the case, we would not depart.`,
       `We are completing the final paperwork and expect to leave the stand in approximately ${v('offMin')} minutes.`,
       `Thank you very much for your patience and understanding. On behalf of the entire crew, we apologize for the inconvenience.`]}}},
- {id:'deplane',it:'Sbarco',en:'De-plane',fields:[],
+ {id:'deplane',it:'Sbarco',en:'De-plane',alt:1,fields:[],
   build:()=>({
    it:[`Signore e signori, parla il Comandante.`,`Per motivi operativi, procederemo ora con uno sbarco ordinato dell’aeromobile.`,`Vi chiediamo di rimanere seduti e di attendere le istruzioni dell’equipaggio di cabina.`,
      `Grazie per la collaborazione. Vi preghiamo di seguire sempre le indicazioni dell’equipaggio.`],
@@ -768,8 +792,8 @@ const SC=[
 ];
 
 /* ---- cartelle e tag rapidi ---- */
-const FOLDERS=[{id:'ground',l:'Ground',sc:['board','delay','gtech','deplane']},{id:'enroute',l:'Enroute',sc:['cruise','turb']}];
-const QUICK=['ma','div','tech','bomb'];
+const FOLDERS=[{id:'ground',l:'Ground',sc:['board','delay','gtech']},{id:'enroute',l:'Enroute',sc:['cruise','turb']}];
+const QUICK=['deplane','ma','div','tech','bomb'];
 
 /* ---- form ---- */
 function field(k){
@@ -793,7 +817,7 @@ function renderForm(){
   const fo=FOLDERS.find(f=>f.id===S.folder)||FOLDERS[0];
   document.getElementById('folders').innerHTML=FOLDERS.map(f=>`<button type="button" role="tab" class="folder" data-folder="${f.id}" aria-selected="${f.id===fo.id}">${f.l}</button>`).join('');
   document.getElementById('tiles').innerHTML=fo.sc.map(id=>tile(SC.find(s=>s.id===id))).join('');
-  document.getElementById('quick').innerHTML=QUICK.map(id=>{const s=SC.find(x=>x.id===id);return `<button type="button" class="qtag${s.emer?' emer':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}">${s.en}</button>`}).join('');
+  document.getElementById('quick').innerHTML=QUICK.map(id=>{const s=SC.find(x=>x.id===id);return `<button type="button" class="qtag${s.emer?' emer':s.alt?' alt':''}" data-sc="${s.id}" aria-pressed="${s.id===S.sc}">${s.en}</button>`}).join('');
   const sc=cur();
   document.getElementById('questions').innerHTML=sc.fields.length
     ?`<div class="fields">${sc.fields.map(field).join('')}</div>${sc.tip?`<p class="tip">${sc.tip}</p>`:''}`
@@ -804,7 +828,7 @@ function renderForm(){
 /* ---- output ---- */
 let last={it:[],en:[]};
 function renderOut(){
-  const sc=cur();last=sc.build();
+  const sc=cur();const raw=sc.build();last={it:raw.it.filter(Boolean),en:raw.en.filter(Boolean)};
   document.documentElement.style.setProperty('--rs',S.rs+'px');
   document.documentElement.style.setProperty('--rz',S.rz+'px');
   document.getElementById('sctitle').textContent=sc.en;
@@ -838,7 +862,7 @@ const memoLang=l=>document.querySelectorAll('[data-ml]').forEach(x=>x.hidden=x.d
 /* ---- eventi ---- */
 document.addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.v!==undefined){S[b.dataset.k]=b.dataset.v;save();renderForm();renderOut();
+  if(b.dataset.v!==undefined){S[b.dataset.k]=(F[b.dataset.k]&&F[b.dataset.k].opt&&S[b.dataset.k]===b.dataset.v)?'':b.dataset.v;save();renderForm();renderOut();
     const again=document.querySelector(`[data-k="${b.dataset.k}"][data-v="${b.dataset.v}"]`);again&&again.focus();return}
   if(b.dataset.memoclose){document.getElementById('memov').hidden=true;return}
   if(b.dataset.memolang){memoLang(b.dataset.memolang);document.getElementById('memov').scrollTo(0,0);return}
@@ -849,6 +873,12 @@ document.addEventListener('click',async e=>{
     case 'swap':S.first=S.first==='it'?'en':'it';save();renderOut();break;
     case 'smaller':S.rs=Math.max(14,S.rs-2);save();renderOut();break;
     case 'bigger':S.rs=Math.min(30,S.rs+2);save();renderOut();break;
+    case 'update':
+      if(!navigator.onLine){b.textContent='Offline';setTimeout(()=>b.textContent='Update app',2500);break}
+      b.textContent='Updating…';
+      try{if('serviceWorker' in navigator){for(const r of await navigator.serviceWorker.getRegistrations())await r.unregister()}
+        for(const k of await caches.keys())await caches.delete(k)}catch(e){}
+      location.replace(location.pathname+'?u='+Date.now());break;
     case 'read':openReader();break;
     case 'memo':memoLang(S.first);document.getElementById('memov').hidden=false;break;
     case 'rclose':closeReader();break;
